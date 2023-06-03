@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="filter-icons-header">
-            FILTER
+            <input @input="onSearchInput" placeholder="Buscar...">
         </div>
         <div class="champList">
-          <button class="champIcon" v-for="champ in champList">
+          <button class="champIcon" v-for="champ in champList" v-key="champ.id" v-show="filter(champ)">
             <img :src="'/static/icons/'+ champ.champ_id +'.jpg'">
             <div>
               <span class="champName">{{ champ.name }}</span>
@@ -21,7 +21,8 @@ import axios from 'axios'
 export default {
   data () {
     return {
-      champList: []
+      champList: [],
+      searchFilter: ''
     }
   },
   created () {
@@ -39,6 +40,17 @@ export default {
         .catch((error) => {
           console.error(error)
         })
+    },
+    onSearchInput (ev) {
+      console.log(`Input event - Value: ${ev.target.value}`)
+      this.searchFilter = ev.target.value
+      this.$forceUpdate()
+    },
+    filter (champ) {
+      console.log('FILTERING CHAMP', champ.name, 'With search value:', this.searchFilter)
+      if (champ.name.toUpperCase().search(this.searchFilter.toUpperCase()) > -1) {
+        return true
+      }
     }
   }
 }
@@ -52,15 +64,17 @@ export default {
 }
 
 .champList {
-  height: 70vh;
+  max-height: 70vh;
   widtH: 50vw;
-  overflow-y: scroll;
+  overflow-y: auto;
   display: grid;
-  grid-template-columns: 90px 90px 90px 90px 90px 90px 90px;
-  grid-gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 90px));
+  gap: 10px;
   background-color: #fff;
   color: #444;
   padding-left: 50px;
+  align-items: start;
+  justify-content: start;
 }
 
 .champIcon {
@@ -69,7 +83,7 @@ export default {
   border: 0;
 }
 
-img { 
+img {
   width: 90px;
 }
 
