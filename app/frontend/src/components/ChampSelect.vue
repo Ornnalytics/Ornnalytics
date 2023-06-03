@@ -1,48 +1,45 @@
 <template>
-    <div class="champsIconsSelection" :class="{ side : true }">
-        <div class="champIconSelection roleTOP">
+    <div class="champsIconsSelection">
+        <div class="champIconSelection roleTOP" :class="[lado]">
         </div>
-        <div class="champIconSelection roleJGL">
+        <div class="champIconSelection roleJGL" :class="[lado]">
         </div>
-        <div class="champIconSelection roleMID">
+        <div class="champIconSelection roleMID" :class="[lado]">
         </div>
-        <div class="champIconSelection roleADC">
+        <div class="champIconSelection roleADC" :class="[lado]">
         </div>
-        <div class="champIconSelection roleSUP">
+        <div class="champIconSelection roleSUP" :class="[lado]">
         </div>
     </div>
 </template>
 
-<script setup>
+<script>
 
-const props = defineProps({
-    side: {
-        type: String,
-        required: true,
-        validator(value) {
-            // The value must match one of these strings
-            return ['blue', 'red'].includes(value)
-        }
-    }
-})
 
-print(props.side)
+export default {
+    name: "champ_selector",
+    props: ["lado"]
+}
+
 
 </script>
 
 <style scoped>
+
 .champIconSelection {
     background: lightblue;
     border-radius: 50%;
     width: 100px;
     height: 100px;
+    margin: 30px;
 }
 
-#blue {
-    border-color: blue;
+.blue {
+    box-shadow: 0 0 7px blue;
 }
 
-#red {
-    border-color: red;
+.red { 
+    box-shadow: 0 0 7px red;
 }
+
 </style>

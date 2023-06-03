@@ -4,23 +4,18 @@
             FILTER
         </div>
         <div class="champList">
-            <div class="champItem" v-for="(champ, index) in champList" :key="index">
-                {{ index }}: {{ champ.name }}
+          <button class="champIcon" v-for="champ in champList">
+            <img :src="'/static/icons/'+ champ.champ_id +'.jpg'">
+            <div>
+              <span class="champName">{{ champ.name }}</span>
             </div>
+          </button>
         </div>
     </div>
-    <!--
-    <div class="champ-listing">
-        <div class="champ-icon" v-for="champ in champList">
-            <champIcon champId="{{champ.id}}"></champIcon>
-            {{ champ.name }}
-        </div>
-    </div>
-    -->
 </template>
 
 <script>
-import champIcon from './ChampIcon.vue'
+
 import axios from 'axios'
 
 export default {
@@ -31,10 +26,6 @@ export default {
   },
   created () {
     this.getChamps()
-    console.log('SE llama')
-  },
-  components: {
-    champIcon
   },
   methods: {
     getChamps () {
@@ -55,23 +46,31 @@ export default {
 
 <style scoped>
 
-.champList {
-    height: 70vh;
-    widtH: 50vw;
-    overflow-y: scroll;
-    display: grid;
-    grid-template-columns: 100px 100px 100px 100px 100px;
-    grid-gap: 10px;
-    background-color: #fff;
-    color: #444;
+.filter-icons-header {
+  width: 100%;
+  height: 100px;
 }
 
-.champItem {
-    background-color: #444;
-    color: #fff;
-    border-radius: 5px;
-    padding: 20px;
-    font-size: 150%;
+.champList {
+  height: 70vh;
+  widtH: 50vw;
+  overflow-y: scroll;
+  display: grid;
+  grid-template-columns: 90px 90px 90px 90px 90px 90px 90px;
+  grid-gap: 10px;
+  background-color: #fff;
+  color: #444;
+  padding-left: 50px;
+}
+
+.champIcon {
+  width: 90px;
+  background-color: transparent;
+  border: 0;
+}
+
+img { 
+  width: 90px;
 }
 
 </style>

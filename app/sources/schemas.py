@@ -15,6 +15,10 @@ class Champ(BaseModel):
 
     class Config:
         orm_mode = True
+
+class ChampWinrate(Champ):
+    winrate_global: float
+
 '''
 class TeamBase(BaseModel):
     name: str
