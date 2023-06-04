@@ -3,7 +3,7 @@ import enum
 from sqlalchemy import Boolean, MetaData, Column, ForeignKey, Integer, String, Date, Float, Enum, UniqueConstraint, \
     Table, DateTime
 from sqlalchemy.orm import relationship
-
+from sqlalchemy.types import Text
 from database import Base
 
 
@@ -18,6 +18,24 @@ class Champ(Base):
     timeline_results = Column(String(6), nullable=False)
 
 
+class Soul(Base):
+    __tablename__ = 'soul_drake'
+
+    soulDrake_id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=False)
+    winrate = Column(Float, nullable=False)
+    passive = Column(Integer, ForeignKey("passive.passive_id"), nullable=False)
+
+    passive_rel = relationship("Passive", foreign_keys=passive, backref="soulPassive")
+
+
+
+class Passive(Base):
+    __tablename__ = 'passive'
+
+    passive_id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=False)
+    description = Column(Text, nullable=False)
 
 '''
 # categories_list = ['Juvenil','Pro']

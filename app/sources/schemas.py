@@ -19,6 +19,24 @@ class Champ(BaseModel):
 class ChampWinrate(Champ):
     winrate_global: float
 
+
+class Soul(BaseModel):
+    soulDrake_id: int
+    name: str
+    winrate: float
+    passive: int
+
+    class Config:
+        orm_mode = True
+
+class SoulPassive(Soul):
+    passive_desc: str
+
+class Passive(BaseModel):
+    passive_id: int
+    name: str
+    description: str
+
 '''
 class TeamBase(BaseModel):
     name: str

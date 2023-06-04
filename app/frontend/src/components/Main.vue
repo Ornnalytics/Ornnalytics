@@ -12,30 +12,17 @@
       </div>
     </div>
 
-    <div id="dataZone">
-      <div id="champRecommendations">
-        <champRec></champRec>
-      </div>
-      <div id="configRecommendation">
-        <configRec></configRec>
-      </div>
-      <div id="drakeInfo">
-        <drakeInfo></drakeInfo>
-      </div>
-    </div>
+    <dataZone></dataZone>
   </main>
 </template>
-
 
 <script>
 import champList from './ChampList.vue'
 import champSelect from './ChampSelect.vue'
-import champRec from './ChampRec.vue'
-import configRec from './ConfigRec.vue'
-import drakeInfo from './DrakeInfo.vue'
+import dataZone from './DataZone.vue'
 
 export default {
-  data() {
+  data () {
     return {
       message: 'My first component',
       blue_side: 'blue',
@@ -48,36 +35,31 @@ export default {
       champs: []
     }
   },
-  created() {
-    console.log('SE llama')
-  },
   components: {
     champList,
     champSelect,
-    champRec,
-    configRec,
-    drakeInfo
+    dataZone
   }
 }
 </script>
 
 <style>
 
-body {
+html, body {
   margin: 0px;
 }
 main {
   padding: 10px;
   display: flex;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  bottom: 0px;
 }
 
 #champZone {
   display: flex;
-}
-
-#dataZone {
-  display: flex;
-  flex-direction: column;
 }
 
 .drakeInfo {

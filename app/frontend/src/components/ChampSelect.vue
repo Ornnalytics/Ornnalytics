@@ -15,12 +15,10 @@
 
 <script>
 
-
 export default {
-    name: "champ_selector",
-    props: ["lado"]
+  name: 'champ_selector',
+  props: ['lado']
 }
-
 
 </script>
 
@@ -38,7 +36,7 @@ export default {
     box-shadow: 0 0 7px blue;
 }
 
-.red { 
+.red {
     box-shadow: 0 0 7px red;
 }
 

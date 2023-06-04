@@ -63,13 +63,18 @@ Session = Depends(get_db)
 
 
 
-@app.get("/champ", response_model=schemas.Champ)
-def start_test(db: Session = Depends(get_db)):
-    return repository.TEST_CHAMP(db)
-
 @app.get("/champs", response_model=list[schemas.Champ])
-def start_test(db: Session = Depends(get_db)):
-    return repository.TEST_CHAMPS(db)
+def getChamps(db: Session = Depends(get_db)):
+    return repository.get_champs(db)
+
+@app.get("/souls", response_model=list[schemas.SoulPassive])
+def getDrakeSouls(db: Session = Depends(get_db)):
+    ret = repository.get_souls(db)
+    for soul in ret:
+        passive_description = repository.get_passive_by_id(db=db, id=soul.passive).description
+        soul.passive_desc = passive_description
+    print(ret)
+    return ret
 
 '''
 ##########################################
