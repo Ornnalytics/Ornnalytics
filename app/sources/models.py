@@ -37,13 +37,72 @@ class Passive(Base):
     name = Column(String(45), nullable=False)
     description = Column(Text, nullable=False)
 
+class Build(Base):
+    __tablename__ = 'recommend_build'
+
+    champ_id = Column(Integer, primary_key=True)
+    line = Column(String(3), nullable=False)
+    starter_1 = Column(Integer, nullable=False)
+    starter_2 = Column(Integer, nullable=False)
+    starter_3 = Column(Integer, nullable=False)
+    mythic_1 = Column(Integer, nullable=False)
+    mythic_2 = Column(Integer, nullable=False)
+    mythic_3 = Column(Integer, nullable=False)
+    boots_1 = Column(Integer, nullable=False)
+    boots_2 = Column(Integer, nullable=False)
+    legendary_1 = Column(Integer, nullable=False)
+    legendary_2 = Column(Integer, nullable=False)
+    legendary_3 = Column(Integer, nullable=False)
+    legendary_4 = Column(Integer, nullable=False)
+    trinket_1 = Column(Integer, nullable=False)
+    trinket_2 = Column(Integer, nullable=False)
+
+
+class Runes(Base):
+    __tablename__ = 'champ_configuration'
+
+    champ_id = Column(Integer, primary_key=True)
+    opt = Column(Integer, primary_key=True)
+    line = Column(String(3), primary_key=True)
+    main_perk_style_id = Column(Integer, nullable=False)
+    second_perk_style_id = Column(Integer, nullable=False)
+    main_perk_id_1 = Column(Integer, nullable=False)
+    main_perk_id_2 = Column(Integer, nullable=False)
+    main_perk_id_3 = Column(Integer, nullable=False)
+    main_perk_id_4 = Column(Integer, nullable=False)
+    second_perk_id_1 = Column(Integer, nullable=False)
+    second_perk_id_2 = Column(Integer, nullable=False)
+    last_perk_id_1 = Column(Integer, nullable=False)
+    last_perk_id_2 = Column(Integer, nullable=False)
+    last_perk_id_3 = Column(Integer, nullable=False)
+    summ_spell_id_1 = Column(Integer, nullable=False)
+    summ_spell_id_2 = Column(Integer, nullable=False)
+
+
+class Perk(Base):
+    __tablename__ = "perk"
+
+    perk_id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=False)
+    shortDesc = Column(Text, nullable=False)
+    longDesc = Column(Text, nullable=False)
+    recommendationDesc = Column(Text, nullable=False)
+
+
+class PerkStyle(Base):
+    __tablename__ = "perk_style"
+
+    style_id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=False)
+    tooltip = Column(String(45), nullable=False)
+
 '''
 # categories_list = ['Juvenil','Pro']
 # sports_list = ['Lol','Minecraft']
 categories_list = ("Pro", "Junior")
 sports_list = ("Lol", "Football")
 # categories_enum=Enum(*categories_list)
-# print(categories_enum)
+# prInteger(categories_enum)
 """
 class sports_list(enum.Enum):
     Lol = "Lol"
@@ -66,13 +125,6 @@ class Category_Enum(enum.Enum):
     
 
 
-CategoryType: Enum = Enum(
-    Category_Enum,
-    name="post_category_type",
-    create_constraint=True,
-    metadata=Base.metadata,
-    validate_strings=True,
-)
 
 
 class Team(Base):
@@ -86,7 +138,7 @@ class Team(Base):
 
 class Match(Base):
     __tablename__ = 'matches'  # This is table name
-    __table_args__ = (UniqueConstraint('local_id', 'visitor_id', 'competition_id', 'date'),)
+    __table_args__ = (UniqueConstraInteger('local_id', 'visitor_id', 'competition_id', 'date'),)
 
     id = Column(Integer, primary_key=True)
     date = Column(DateTime, nullable=False)
@@ -110,7 +162,7 @@ teams_in_competitions = Table("teams_in_competitions", Base.metadata,
 
 class Competition(Base):
     __tablename__ = 'competitions'  # This is table name
-    __table_args__ = (UniqueConstraint('name', 'category', 'sport'),)
+    __table_args__ = (UniqueConstraInteger('name', 'category', 'sport'),)
 
     id = Column(Integer, primary_key=True)
     name = Column(String(30), nullable=False)

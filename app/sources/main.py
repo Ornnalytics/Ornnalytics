@@ -4,8 +4,8 @@ from fastapi import Depends, FastAPI, HTTPException
 from pydantic.main import Enum
 from sqlalchemy.orm import Session
 from typing import List
-
 import repository, models, schemas
+from pprint import pprint
 from database import SessionLocal, engine
 
 from sqlalchemy import select
@@ -64,17 +64,25 @@ Session = Depends(get_db)
 
 
 @app.get("/champs", response_model=list[schemas.Champ])
-def getChamps(db: Session = Depends(get_db)):
+def get_champs(db: Session = Depends(get_db)):
     return repository.get_champs(db)
 
 @app.get("/souls", response_model=list[schemas.SoulPassive])
-def getDrakeSouls(db: Session = Depends(get_db)):
+def get_souls(db: Session = Depends(get_db)):
     ret = repository.get_souls(db)
     for soul in ret:
         passive_description = repository.get_passive_by_id(db=db, id=soul.passive).description
         soul.passive_desc = passive_description
     print(ret)
     return ret
+
+@app.get("/build/{champ_id}", response_model=List[schemas.Build])
+def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
+    return repository.get_build_by_champId(db=db, id=champ_id)
+
+@app.get("/runes/{champ_id}", response_model=List[schemas.Runes])
+def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
+    return repository.get_runes_by_champId(db=db, id=champ_id)
 
 '''
 ##########################################

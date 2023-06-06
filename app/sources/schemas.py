@@ -32,10 +32,66 @@ class Soul(BaseModel):
 class SoulPassive(Soul):
     passive_desc: str
 
+
 class Passive(BaseModel):
     passive_id: int
     name: str
     description: str
+
+
+class Build(BaseModel):
+    champ_id: int
+    line: str
+    starter_1: int
+    starter_2: int
+    starter_3: int
+    mythic_1: int
+    mythic_2: int
+    mythic_3: int
+    boots_1: int
+    boots_2: int
+    legendary_1: int
+    legendary_2: int
+    legendary_3: int
+    legendary_4: int
+    trinket_1: int
+    trinket_2: int
+
+
+class Runes(BaseModel):
+    champ_id: int
+    opt: int
+    line: str
+    main_perk_style_id: int
+    second_perk_style_id: int
+    main_perk_id_1: int
+    main_perk_id_2: int
+    main_perk_id_3: int
+    main_perk_id_4: int
+    second_perk_id_1: int
+    second_perk_id_2: int
+    last_perk_id_1: int
+    last_perk_id_2: int
+    last_perk_id_3: int
+    summ_spell_id_1: int
+    summ_spell_id_2: int
+
+    class Config:
+        orm_mode = True
+
+
+class Perk(BaseModel):
+    perk_id: int
+    name: str
+    shortDesc: str
+    longDesc: str
+    recommendationDesc: str
+
+
+class PerkStyle(BaseModel):
+    style_id: int
+    name: str
+    tooltip: str
 
 '''
 class TeamBase(BaseModel):

@@ -28,6 +28,7 @@ module.exports = {
     'indent': 'off',
     'no-multiple-empty-lines': 'off',
     'space-before-function-paren': 'off',
-    'eol-last': 'off'
+    'eol-last': 'off',
+    'no-undef': 'off'
   }
 }
