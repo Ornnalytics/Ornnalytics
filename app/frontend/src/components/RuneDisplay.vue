@@ -1,27 +1,40 @@
 <template>
   <div id="main-Container">
-    <div id="perkStyles-Container">
-      <div class="perkStyle">
-        <img :src="'/static/perk_icons/'+ this.runesDisplayed.mainStyle +'.png'">
-      </div>
-      <div class="perkStyle">
-        <img :src="'/static/perk_icons/'+ this.runesDisplayed.secondaryStyle +'.png'">
-      </div>
+    <div id="perkData-Container">
+      <img :src="'/static/lane_icons/'+ this.runesDisplayed.line +'.png'">
     </div>
-    <div id="perks-Container">
-      <div id="mainPerks-Container">
-        <div class="perk" v-for="perk in this.runesDisplayed.main" v-bind:key="perk">
-          <img :src="'/static/perk_icons/'+ perk +'.png'">
+    <div style="display: flex; flex-direction: row; align-content: center; justify-content: center;">
+      <button class="changeButton" @click="changeRunes('left')">
+        <img src="/static/useful_icons/arrow.png">
+      </button>
+      <div id="perkContent-Container">
+        <div id="perkStyles-Container">
+          <div class="perkStyle">
+            <img :src="'/static/perk_icons/'+ this.runesDisplayed.mainStyle +'.png'">
+          </div>
+          <div class="perkStyle">
+            <img :src="'/static/perk_icons/'+ this.runesDisplayed.secondaryStyle +'.png'">
+          </div>
+        </div>
+        <div id="perks-Container">
+          <div id="mainPerks-Container">
+            <div class="perk" v-for="perk in this.runesDisplayed.main">
+              <img :src="'/static/perk_icons/'+ perk +'.png'">
+            </div>
+          </div>
+          <div id="secPerks-Container">
+            <div class="perk" v-for="perk in this.runesDisplayed.secondary">
+              <img :src="'/static/perk_icons/'+ perk +'.png'">
+            </div>
+            <div class="lastPerk" v-for="perk in this.runesDisplayed.lastPerks">
+              <img :src="'/static/perk_icons/'+ perk +'.png'">
+            </div>
+          </div>
         </div>
       </div>
-      <div id="secPerks-Container">
-        <div class="perk" v-for="perk in this.runesDisplayed.secondary" v-bind:key="perk">
-          <img :src="'/static/perk_icons/'+ perk +'.png'">
-        </div>
-        <div class="lastPerk" v-for="perk in this.runesDisplayed.lastPerks" v-bind:key="perk">
-          <img :src="'/static/perk_icons/'+ perk +'.png'">
-        </div>
-      </div>
+      <button class="changeButton" @click="changeRunes('right')">
+        <img src="/static/useful_icons/arrow.png" style="transform: rotate(180deg)">
+      </button>
     </div>
   </div>
 </template>
@@ -32,12 +45,14 @@ export default {
   props: ['configuration'],
   data() {
     return {
-      runesDisplayed: {}
+      runesDisplayed: {},
+      runePos: 0,
+      runesDict: {}
     }
   },
   created() {
     console.log(this.configuration)
-    this.adaptRunes(this.configuration[0])
+    this.adaptRunes(this.configuration[this.runePos])
   },
   methods: {
     adaptRunes (runes) {
@@ -65,7 +80,25 @@ export default {
         runes.last_perk_id_3
       ]
 
+      this.$forceUpdate()
       console.log(this.runesDisplayed)
+    },
+    changeRunes (side) {
+      if (side === 'left') {
+        if (this.runePos === 0) {
+          this.runePos = this.configuration.length - 1
+        } else {
+          this.runePos -= 1
+        }
+      } else if (side === 'right') {
+        if (this.runePos === this.configuration.length - 1) {
+          this.runePos = 0
+        } else {
+          this.runePos += 1
+        }
+      }
+
+      this.adaptRunes(this.configuration[this.runePos])
     }
   }
 }
@@ -77,6 +110,26 @@ export default {
 #main-Container {
   display: flex;
   flex-direction: column;
+  background-color: #bbd7fa;
+  padding: 5px 15px;
+}
+
+#perkContent-Container {
+  background-color: #9fcdff;
+  padding: 20px;
+}
+
+#perkData-Container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+
+  flex: 1 1 auto;
+}
+
+#perkData-Container > * {
+  margin: 10px;
 }
 
 #perkStyles-Container {
@@ -143,6 +196,17 @@ export default {
 
   flex: 1 1 auto;
   margin: 20px;
+}
+
+.changeButton {
+  cursor: pointer;
+  background-color: transparent;
+  border: 0px;
+}
+
+.changeButton>img {
+  width: 15px;
+  height: 15px;
 }
 
 </style>
