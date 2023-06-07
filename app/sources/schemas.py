@@ -57,6 +57,9 @@ class Build(BaseModel):
     trinket_1: int
     trinket_2: int
 
+    class Config:
+        orm_mode = True
+
 
 class Runes(BaseModel):
     champ_id: int

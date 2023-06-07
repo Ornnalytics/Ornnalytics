@@ -2,13 +2,13 @@
   <main>
     <div id="champZone">
       <div id="blueChampSelect">
-        <champSelect :lado=blue_side></champSelect>
+        <champSelect :lado=blue_side :rolePicked=b_rolePicked :champsPicked=b_champsPicked @pickRole="pickRoleB"></champSelect>
       </div>
       <div id="champList">
-        <champList></champList>
+        <champList @setChamp="setChamp"></champList>
       </div>
       <div id="redChampSelect">
-        <champSelect :lado=red_side></champSelect>
+        <champSelect :lado=red_side :rolePicked=r_rolePicked :champsPicked=r_champsPicked @pickRole="pickRoleR"></champSelect>
       </div>
     </div>
 
@@ -27,12 +27,41 @@ export default {
       message: 'My first component',
       blue_side: 'blue',
       red_side: 'red',
-      ticketsBought: 0,
-      ticketsTotal: 200,
-      moneyAvailable: 29.02,
-      priceMatch: 5,
-      matches_added: [],
-      champs: []
+      b_rolePicked: '',
+      r_rolePicked: '',
+      b_champsPicked: [1, 0, 777, 0, 0],
+      r_champsPicked: [0, 0, 0, 0, 0],
+      roleDict: {'TOP': 0, 'JGL': 1, 'MID': 2, 'ADC': 3, 'SUP': 4}
+    }
+  },
+  methods: {
+    pickRoleB (role) {
+      this.b_rolePicked = role
+      this.r_rolePicked = ''
+      console.log(this.b_rolePicked)
+      if (this.pickedChamp !== '') {
+        this.b_champsPicked[this.roleDict[this.b_rolePicked]] = this.pickedChamp
+        this.pickedChamp = ''
+      }
+    },
+    pickRoleR (role) {
+      this.b_rolePicked = ''
+      this.r_rolePicked = role
+      console.log(this.r_rolePicked)
+      if (this.pickedChamp !== '') {
+        this.r_champsPicked[this.roleDict[this.r_rolePicked]] = this.pickedChamp
+        this.pickedChamp = ''
+      }
+    },
+    setChamp (champ_id) {
+      this.pickedChamp = champ_id
+      if (this.b_rolePicked !== '') {
+        this.b_champsPicked[this.roleDict[this.b_rolePicked]] = this.pickedChamp
+        this.pickedChamp = ''
+      } else if (this.r_rolePicked !== '') {
+        this.r_champsPicked[this.roleDict[this.r_rolePicked]] = this.pickedChamp
+        this.pickedChamp = ''
+      }
     }
   },
   components: {
@@ -60,29 +89,15 @@ main {
 
 #champZone {
   display: flex;
+  flex: 1;
 }
 
-.drakeInfo {
-  margin: 10px;
-  padding: 5px;
-  min-height: 1.5rem;
-  background-color: lightgray;
-  border-radius: 3px;
+#blueChampSelect {
+  flex: 1;
 }
 
-.configRecommendation {
-  margin: 10px;
-  padding: 5px;
-  min-height: 1.5rem;
-  background-color: lightgray;
-  border-radius: 3px;
+#redChampSelect {
+  flex: 1;
 }
 
-.champRecommendations {
-  margin: 10px;
-  padding: 5px;
-  min-height: 1.5rem;
-  background-color: lightgray;
-  border-radius: 3px;
-}
 </style>

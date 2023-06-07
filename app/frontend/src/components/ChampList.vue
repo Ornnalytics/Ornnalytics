@@ -9,12 +9,14 @@
           <input @input="onSearchInput" placeholder="Buscar..." clasS="filter-search">
         </div>
         <div class="champList">
-          <button class="champIcon" v-for="champ in champList" v-bind:key="champ.id" v-show="filter(champ)">
-            <img :src="'/static/icons/'+ champ.champ_id +'.jpg'">
+          <div class="champIcon" v-for="champ in champList" v-bind:key="champ.id" v-show="filter(champ)">
+            <button @click="setChamp(champ.champ_id)">
+              <img :src="'/static/icons/'+ champ.champ_id +'.jpg'">
+            </button>
             <div>
               <span class="champName">{{ champ.name }}</span>
             </div>
-          </button>
+          </div>
         </div>
     </div>
 </template>
@@ -71,6 +73,9 @@ export default {
         this.selectedRole = role
       }
       this.$forceUpdate()
+    },
+    setChamp (champ_id) {
+      this.$emit('setChamp', champ_id)
     }
   }
 }
@@ -119,7 +124,7 @@ export default {
 
 .champList {
   max-height: 70vh;
-  widtH: 50vw;
+  widtH: 40vw;
   overflow-y: auto;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(90px, 90px));
@@ -151,4 +156,11 @@ img {
   line-height: 47px;
 }
 
+button {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  background-color: transparent;
+  align-content: center;
+}
 </style>

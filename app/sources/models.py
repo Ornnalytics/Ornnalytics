@@ -38,7 +38,7 @@ class Passive(Base):
     description = Column(Text, nullable=False)
 
 class Build(Base):
-    __tablename__ = 'recommend_build'
+    __tablename__ = 'recommended_build'
 
     champ_id = Column(Integer, primary_key=True)
     line = Column(String(3), nullable=False)

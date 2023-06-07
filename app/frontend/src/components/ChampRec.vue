@@ -33,7 +33,7 @@ export default {
         b_3: 62,
         b_4: 156,
         b_5: 18,
-        player: 'r_5',
+        player: 'r_1',
         role: 'top',
         timeline: '021122'
       }

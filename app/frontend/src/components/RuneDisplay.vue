@@ -18,15 +18,15 @@
         </div>
         <div id="perks-Container">
           <div id="mainPerks-Container">
-            <div class="perk" v-for="perk in this.runesDisplayed.main">
+            <div class="perk" v-for="(perk, i) in this.runesDisplayed.main" v-bind:key="i">
               <img :src="'/static/perk_icons/'+ perk +'.png'">
             </div>
           </div>
           <div id="secPerks-Container">
-            <div class="perk" v-for="perk in this.runesDisplayed.secondary">
+            <div class="perk" v-for="(perk, i) in this.runesDisplayed.secondary" v-bind:key="i">
               <img :src="'/static/perk_icons/'+ perk +'.png'">
             </div>
-            <div class="lastPerk" v-for="perk in this.runesDisplayed.lastPerks">
+            <div class="lastPerk" v-for="(perk, i) in this.runesDisplayed.lastPerks" v-bind:key="i">
               <img :src="'/static/perk_icons/'+ perk +'.png'">
             </div>
           </div>
@@ -110,12 +110,10 @@ export default {
 #main-Container {
   display: flex;
   flex-direction: column;
-  background-color: #bbd7fa;
   padding: 5px 15px;
 }
 
 #perkContent-Container {
-  background-color: #9fcdff;
   padding: 20px;
 }
 
@@ -124,12 +122,12 @@ export default {
   flex-direction: row;
   align-content: center;
   justify-content: center;
-
-  flex: 1 1 auto;
 }
 
 #perkData-Container > * {
   margin: 10px;
+  width: 40px;
+  height: 40px;
 }
 
 #perkStyles-Container {
