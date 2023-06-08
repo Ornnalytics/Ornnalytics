@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 SQLALCHEMY_DATABASE_URL = URL.create(
     "mysql+pymysql",
     username="LeagueOfLegends",
-    password="@Peacer9811",
+    password="",
     host="127.0.0.1",
     database="league_of_legends",
 )
