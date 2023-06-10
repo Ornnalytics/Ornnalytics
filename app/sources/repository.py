@@ -3,262 +3,298 @@ from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy.inspection import inspect
 from sqlalchemy import select
-
+from pprint import pprint
 import models
 import schemas
 
 
-
-def TEST_CHAMP(db: Session):
-    return db.query(models.Champ).first()
-
-
-def TEST_CHAMPS(db: Session):
+def get_champs(db: Session):
     return db.query(models.Champ).all()
-'''
-##########################################
-############ Acciones TEAMS ##############
-##########################################
-def get_team(db: Session, team_id: int):
-    return db.query(models.Team).filter(models.Team.id == team_id).first()
 
 
-def get_team_by_name(db: Session, name: str):
-    return db.query(models.Team).filter(models.Team.name == name).first()
+def get_souls(db: Session):
+    return db.query(models.Soul).all()
 
 
-def get_teams(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Team).offset(skip).limit(limit).all()
+def get_passive_by_id(db: Session, id):
+    return db.query(models.Passive).where(models.Passive.passive_id == id).first()
 
 
-def create_team(db: Session, team: schemas.TeamCreate):
-    db_team = models.Team(name=team.name, country=team.country, description=team.description)
-    db.add(db_team)
-    db.commit()
-    db.refresh(db_team)
-    return db_team
+def get_build_by_champId(db: Session, id):
+    return db.query(models.Build).where(models.Build.champ_id == id).all()
 
 
-def delete_team(db: Session, team: schemas.TeamCreate):
-    db.delete(team)
-    matches = get_matches_from_team(db=db, team_name=team.name)
-    for match in matches:
-        db.delete(match)  # TODO REVISAR SI ES LO QUE REALMENTE QUEREMOS AAAAAAAAAAAA!!!!!!!!!!!!!
-    db.commit()
+def get_runes_by_champId(db: Session, id):
+    return db.query(models.Runes).where(models.Runes.champ_id == id).all()
 
 
-# Suponemos que la id no se cambia
-def update_team(db: Session, old_name: str, team: schemas.TeamCreate):
-    res = db.query(models.Team).filter(models.Team.name == old_name).first()
+def get_winrateOfLine(db: Session, line, side, elo='GLOBAL'):
+    statement = select(models.Winrate.champ_id,
+                       getattr(models.Winrate, 'winrate_' + line.lower() + '_' + side.lower())).where(
+        models.Winrate.elo_id == elo)
 
-    res.name = team.name
-    res.country = team.country
-    res.description = team.description
-
-    db.commit()
-    return res
-
-
-##########################################
-######## Acciones COMPETITIONS ###########
-##########################################
-def get_competition(db: Session, competition_id: int):
-    return db.query(models.Competition).filter(models.Competition.id == competition_id).first()
-
-
-def get_competition_by_name(db: Session, name: str):
-    return db.query(models.Competition).filter(models.Competition.name == name).first()
-
-
-def get_competitions(db: Session, skip: int = 1, limit: int = 100):
-    qr = db.query(models.Competition)
-
-    return qr.offset(skip).limit(limit).all()
-
-
-def create_competition(db: Session, competition: schemas.CompetitionCreate, teams: List[models.Team]):
-    print("Repository")
-    db.query()
-    db_competition = models.Competition(name=competition.name, category=competition.category.name,
-                                        sport=competition.sport.name)
-
-    db_competition.teams.extend(teams)
-
-    db.add(db_competition)
-    db.commit()
-    db.refresh(db_competition)
-    return db_competition
-
-
-def delete_competition(db: Session, competition: schemas.CompetitionCreate):
-    db.delete(competition)
-    matches = get_matches_from_competition(db=db, competition_name=competition.name)
-    for match in matches:
-        db.delete(match)
-    db.commit()
-
-
-# Suponemos que la id no se cambia
-def update_competition(db: Session, old_name: str, competition: schemas.CompetitionCreate):
-    res = db.query(models.Competition).filter(models.Competition.name == old_name).first()
-
-    res.name = competition.name
-    res.sport = competition.sport.name
-    res.category = competition.category.name
-
-    db.commit()
-    return res
-
-
-##########################################
-########### Acciones MATCHES #############
-##########################################
-
-def get_matches(db: Session, skip: int = 1, limit: int = 100):
-    retquery = db.query(models.Match).offset(skip).limit(limit).all()
-    return retquery
-
-
-def get_match_by_id(db: Session, match_id: int):
-    return db.query(models.Match).filter(models.Match.id == match_id).first()
-
-
-def create_match(db: Session, match: schemas.MatchCreate):
-    db_match = models.Match(date=match.date, price=match.price, local_id=match.local_id, visitor_id=match.visitor_id,
-                            competition_id=match.competition_id,total_available_tickets=match.total_available_tickets)
-    db_match.competition = get_competition(db=db, competition_id=match.competition_id)
-    db_match.local = get_team(db=db, team_id=match.local_id)
-    db_match.visitor = get_team(db=db, team_id=match.visitor_id)
-
-
-    db.add(db_match)
-    db.commit()
-    db.refresh(db_match)
-
-    return db_match
-
-
-def delete_match(db: Session, match: schemas.MatchCreate):
-    db.delete(match)
-    db.commit()
-
-
-# Suponemos que la id no se cambia
-def update_match(db: Session, match_id: int, match: schemas.MatchCreate):
-    res = db.query(models.Match).filter(models.Match.id == match_id).first()
-
-    res.local_id = match.local_id
-    res.local = get_team(db=db, team_id=match.local_id)
-    res.visitor_id = match.visitor_id
-    res.visitor = get_team(db=db, team_id=match.visitor_id)
-    res.competition_id = match.competition_id
-    res.competition = get_competition(db=db, competition_id=match.competition_id)
-    res.date = match.date
-    res.price = match.price
-
-    db.commit()
-    return res
-
-
-#################################################
-############ Acciones RELACIONALES ##############
-#################################################
-
-def get_matches_from_team(db: Session, team_name: str, skip: int = 1, limit: int = 2):
-    data_local = db.query(models.Match).join(models.Match.local).filter(models.Team.name == team_name).all()
-    data_visitor = db.query(models.Match).join(models.Match.visitor).filter(models.Team.name == team_name).all()
-    data = data_local + data_visitor
-    return list(data)[::skip][:limit]
-
-
-def get_competitions_from_team(db: Session, team_name: str, skip: int = 1, limit: int = 100):
-    team = get_team_by_name(db=db, name=team_name)
-    db_data = db.query(models.teams_in_competitions).all()[:limit]
-    data = []
-
-    for val in db_data:
-        if val[1] == team.id:
-            comp = get_competition(db=db, competition_id=val[2])
-            comp.sport = comp.sport.value
-            comp.category = comp.category.value
-            data.append(comp)
-    return list(data)[::skip][:limit]
-
-
-def get_matches_from_competition(db: Session, competition_name: str, skip: int = 1, limit: int = 100):
-    # ir a matches i coger todos aquellos con la id de competition_name
-    comp = get_competition_by_name(db=db, name=competition_name)
-    data = db.query(models.Match).where(models.Match.competition_id == comp.id)
-
-    return list(data)[::skip][:limit]
-
-
-def get_teams_from_competition(db: Session, competition_name: str, skip: int = 1, limit: int = 100):
-    comp = get_competition_by_name(db=db, name=competition_name)
-    # inner join teams in competition con competitions por id; y coges aquellos teams que tengan el nombre
-    statement = select(models.teams_in_competitions)
-    # Limit aqui no tiene sentido, ya que limitas la query, no el resultado
     db_data = db.execute(statement).all()
-    data = []
+    champs = get_champs(db)
 
-    for val in db_data:
-        if val[2] == comp.id:
-            team = get_team(db=db, team_id=val[1])
-            data.append(team)
-    print(skip)
-    return data[::skip][:limit]
-
-
-def get_teams_from_match(db: Session, match: schemas.Match, skip: int = 1, limit: int = 100):
-    statement = select(models.Match.local_id, models.Match.visitor_id).where(models.Match.id == match.id)
-    db_data = db.execute(statement).one()
     data = []
     for var in db_data:
-        data.append(get_team(db=db, team_id=var))
+        if var[1]:
+            varChamp = ''
+            for champ in champs:
+                if champ.champ_id == var[0]:
+                    varChamp = champ
+            ponderation = var[1] * 1 if varChamp.main_role.upper() == line.upper() else var[
+                                                                                            1] * 1 if varChamp.secondary_role and varChamp.secondary_role.upper() == line.upper() else \
+            var[1] * 0.5
+            data.append({'champ_id': var[0], 'winrate': var[1], 'ponderation': ponderation})
 
-    return data[::skip][:limit]
+    print("pre",data)
 
-
-def get_competition_from_match(db: Session, match: schemas.Match, skip: int = 1, limit: int = 100):
-    statement = select(models.Match.competition_id).where(models.Match.id == match.id)
-    db_data = db.execute(statement).one()
-
-    data = get_competition(db=db, competition_id=db_data[0])
-    data.sport = data.sport.value
-    data.category = data.category.value
-    return data[::skip][:limit]
-
-
-def get_orders_by_username(db, username):
-    return db.query(models.Order).filter(models.Order.username == username)
+    data.sort(key=lambda x: x['ponderation'])
+    print("post",data[::-1])
+    return data[::-1]
 
 
-def create_account(db, account):
-    db_acc = models.Account(username=account.username,is_admin=account.is_admin,available_money=account.available_money)
-    db_acc.orders= get_orders_by_username(db=db, username=account.username)
-    db.add(db_acc)
-    db.commit()
-    db.refresh(db_acc)
+def get_winrateByLane(db: Session, champ_id, linea, elo_id = 'GLOBAL'):
+    statement = select(getattr(models.Winrate, 'winrate_' + linea.lower())).where((models.Winrate.elo_id == elo_id) &
+                                                                                 (models.Winrate.champ_id == champ_id))
 
-    return db_acc
+    db_data = db.execute(statement).first()
+    print()
+    print(db_data)
 
-
-def create_order(db, order, username):
-    db_order = models.Order(match_id=order.match_id,tickets_bought=order.tickets_bought)
-    db_order.username=username
+    return db_data
 
 
-    db.add(db_order)
-    db.commit()
-    db.refresh(db_order)
-
-    return db_order
+def get_champ_by_champId(db: Session, champ_id):
+    return db.query(models.Champ).where(models.Champ.champ_id == champ_id).first()
 
 
-def get_acc_by_username(db, username):
-    return db.query(models.Account).filter(models.Account.username == username).first()
+def get_winrateAgainst(db: Session, champ_a_id, champ_b_id, line='GLOBAL', elo='GLOBAL'):
+    champ_a = champ_a_id
+    champ_b = champ_b_id
+    if champ_a > champ_b:
+        temp = champ_a
+        champ_a = champ_b
+        champ_b = temp
+
+    print(champ_a, champ_b, line, elo)
+    data = db.query(models.Winrate_Against).filter((models.Winrate_Against.champ_id == champ_a) &
+                                                   (models.Winrate_Against.champ_against_id == champ_b) &
+                                                   (models.Winrate_Against.line == line) &
+                                                   (models.Winrate_Against.elo == elo)).first()
+
+    print(data)
+
+    return data
+
+def get_winrateWith(db: Session, champ_a_id, champ_b_id, _line_a='GLOBAL', _line_b='GLOBAL', elo='GLOBAL'):
+    champ_a = champ_a_id
+    champ_b = champ_b_id
+    line_a = _line_a
+    line_b = _line_b
+    if champ_a > champ_b:
+        temp = champ_a
+        champ_a = champ_b
+        champ_b = temp
+        temp = line_a
+        line_a = line_b
+        line_b = temp
+    return db.query(models.Winrate_With).where((models.Winrate_With.champ_a_id == champ_a) &
+                                               (models.Winrate_With.champ_b_id == champ_b) &
+                                               (models.Winrate_With.line_a == line_a) &
+                                               (models.Winrate_With.line_b == line_b) &
+                                               (models.Winrate_With.elo_id == elo)).first()
 
 
-def get_orders(db, skip, limit):
-    return db.query(models.Order).offset(skip).limit(limit).all()
-'''
+def get_sugestions(db: Session, role, ally_team, enemy_team):
+    lineDict = {'TOP': 0, 'JGL': 1, 'MID': 2, 'ADC': 3, 'SUP': 4}
+
+
+    # Para mantener una estructura de la info, no se que datos estan en base de datos la verdad (creoq ue esta actualizado) los que faltan se calculan
+    class Champion:
+        def __init__(self, id, name, type, primary_role, secundary_role, timeline, difficulty, engage, disengage, AP, AD, TrueDamage):
+            self.id = id
+            self.name = name
+            self.type = type
+            self.primary_role = primary_role
+            self.secundary_role = secundary_role
+            self.timeline = timeline
+            self.difficulty = difficulty
+            self.engage = engage
+            self.disengage = disengage
+            self.AP = AP
+            self.AD = AD
+            self.TrueDamage = TrueDamage
+            self.wr_against_team = 0
+            self.wr_against_lane = 0
+            self.wr_with = 0
+            self.wr_lane = 0
+            self.damage_contribution = 0
+
+
+    '''
+    Calcula la media de winrates against entre el 'champ_id' y cada uno de los champs enemigos de 'enemy_team'.
+    
+    Return: media de los winrates against entre el 'champ_id' y cada uno de los champs en 'enemy_team' 
+    '''
+    # Winrate del champ contra el equipo enemigo
+    def team_wr_against_team(champ_id, enemy_team):
+        print("\n\nCalculando winrate against Team", champ_id, enemy_team)
+        total_wr = 0
+        enemy_count = 0
+        enemy_i = 0
+
+        print("Enemy team:", enemy_team)
+        for enemy in enemy_team:
+            print("Enemy:", enemy)
+            print(enemy)
+            if enemy > 0:
+                data = get_winrateAgainst(db=db, champ_a_id=champ_id,
+                                              champ_b_id=enemy, line=list(lineDict.keys())[enemy_i])
+                if data != None:                                                                                                    # TODO, REVISAR PQ COJONES NO SE SUBEN TODOS LOS ELO=GLOBAL (EJEMPLO 10-31 EN AGAINST(
+                    wr_enemy = data.winrate
+                    total_wr += wr_enemy
+                    enemy_count += 1
+                    print("WR:", wr_enemy, "total_wr:", total_wr, "enemy_count:", enemy_count)
+            enemy_i += 1
+
+        result = 0
+        if enemy_count > 0:
+            result = total_wr / enemy_count
+            print("Return:", total_wr/enemy_count, "\n\n")
+
+        return result
+
+
+    '''
+    Calcula el winrate de el aliado 'champ_id' contra el champ enemigo de la misma linea ('role') del 'enemy_team'
+    en caso que el enemigo este pickeado (!= 0)
+    
+    Return: winrate against del 'champ_id' contra el mismo champ enemigo de la linea.
+    '''
+    def team_wr_against(champ_id, enemy_team, role):
+        print("\n\nCalculando winrate against champ", champ_id, enemy_team, role)
+
+        wr_enemy = None
+
+        if (enemy_team[lineDict[role]] != 0):
+            print("Champ exists:", enemy_team[lineDict[role]])
+            data = get_winrateAgainst(db=db, champ_a_id=champ_id,
+                                          champ_b_id=enemy_team[lineDict[role]],
+                                          line=role)
+            if data == None:
+                return 0
+
+        print("Return wr_enemy:", wr_enemy)
+        return wr_enemy
+
+
+    '''
+    Calcula el winrate de el aliado 'champ_id' a partir de los champs en 'ally_team', usa el parametro 'role' para,
+    junto a el muiltiplicador 'ally_multiplier', valorar de manera distinta si estas en la botlane.
+    
+    Return: media de winrates de todas las combinaciones de winrate_with(champ_id, ally_champ_id),
+    siendo ally_champ_id cada uno de los champs en ally_team distintos a 0 (A.K.A.: pickeados)
+    '''
+    def team_wr_with(champ_id, ally_team, role, ally_multiplier=1):
+        print("\n\nCalculando winrate with", champ_id, ally_team, role, ally_multiplier)
+        total_wr = 0
+        ally_count = 0
+
+        print("For each ally")
+        for ally in ally_team:
+            print("Ally:", ally)
+            position = ally_team.index(ally)
+            print("Position:")
+            if ally > 0:
+                data = get_winrateWith(db=db, champ_a_id=champ_id, champ_b_id=ally, _line_a=role, _line_b=list(lineDict.keys())[position])
+                if data != None:
+                    wr_ally = data.winrate
+                    print(wr_ally)
+                    if position == 4 or position == 5 and role in ["ADC", "SUP"]:  # si es combo de adc y suport
+                        total_wr += wr_ally * ally_multiplier
+                        ally_count += 1
+                    else:
+                        total_wr += wr_ally
+                        ally_count += 1
+
+        result = 0
+        if ally_count > 0:
+            result = total_wr / ally_count
+
+        return result
+
+
+    # Winrate del champ en la linea
+    def team_wr_lane(champ_id, role):
+        print("\n\n\nCalculando winrate lane")
+        wr_lane = get_winrateByLane(db=db, champ_id=champ_id, linea=role)[0]
+        return wr_lane
+
+
+    # Daño que aporta el champ al equipo
+    def get_damage_contribution(champ, ally_team):
+        print("\n\n\nGetting damage contribution")
+
+        damage_contribution = {'AD': 0, 'AP': 0, 'TD': 0}
+        count = 1
+
+        print("Para cada ally en", ally_team)
+        for ally in ally_team:
+            print("Ally:", ally)
+            if ally > 0:
+                ally_champ = get_champ_by_champId(db=db, champ_id=ally)
+                count += 1
+                # ponemos los damages
+                damage_contribution['AD'] += ally_champ.AD
+                damage_contribution['AP'] += ally_champ.AP
+                damage_contribution['TD'] += ally_champ.TrueDamage
+                print("DamageContribution:", damage_contribution)
+
+        damage_contribution['AD'] = (champ.AD + damage_contribution['AD']) / count
+        damage_contribution['AP'] = (champ.AP + damage_contribution['AP']) / count
+        damage_contribution['TD'] = (champ.TrueDamage + damage_contribution['TD']) / count
+
+        return min(damage_contribution['AD'] / damage_contribution['AP'], damage_contribution['AP'] / damage_contribution['AD']) + 1
+
+
+    # Obtenemos los champs que tengan el role en primaria o secundaria
+    possible_champs = []
+    temp = db.query(models.Champ).filter((models.Champ.main_role == role) | (models.Champ.secondary_role == role)).all()
+    for champ in temp:
+        possible_champs.append(
+            Champion(champ.champ_id, champ.name, champ.type, champ.main_role, champ.secondary_role,
+                     champ.timeline_results, champ.difficulty_level, champ.engage, champ.disengage,
+                     champ.AP, champ.AD, champ.TrueDamage))
+
+
+    # Calculamos datos para la recomendación
+    for champ in possible_champs:
+        champ.wr_lane = team_wr_lane(champ_id=champ.id, role=role)
+        champ.wr_with = team_wr_with(champ_id=champ.id, ally_team=ally_team, role=role)
+        champ.wr_against_team = team_wr_against_team(champ_id=champ.id, enemy_team=enemy_team)
+        champ.wr_against_lane = team_wr_against(champ_id=champ.id, enemy_team=enemy_team, role=role)
+        champ.damage_contribution = get_damage_contribution(champ, ally_team)
+
+
+    # Multiplicadores de oscar que algunos sirven no se la verdad yo los he puesto
+    TeamNeedsATank = 0.1  # Miramos si hay un tanque o fighter en el equipo aliado
+    HasEquilibrateDmg = 0.1  # Proporcional al equilibrio, optimo 50/50
+    TimeStamp = 0  # 0 early, 0.05 mid, 0.1 late #Ya que los enemigos no cierran partidas(Maybe multiplicar por el numero si no cmabiamos el sistema)
+    Facilidad = 0.1  # campeon facil 0.1, campeon dificil 0
+    TeamHasEngageANDDisengage = 0.1  # 0.1 si el equipo tiene las dos, 0.05 si solo tiene una, 0.0 si ninguna
+
+    # Campeones sugeridos (id, valoracion)
+    champs_suggested = []
+    for champ in possible_champs:
+        print(champ.wr_against_lane, champ.wr_against_team, champ.wr_with, champ.wr_lane, champ.damage_contribution)
+        if champ.wr_against_lane == 0 or champ.wr_against_lane == None:
+            champ_value = (champ.wr_lane + champ.wr_against_team + champ.wr_with) / 3 + champ.damage_contribution * HasEquilibrateDmg
+        else:
+            champ_value = (champ.wr_against_lane + champ.wr_against_team + champ.wr_with) / 3 + champ.damage_contribution * HasEquilibrateDmg
+        champs_suggested.append({'champ_id': champ.id, 'winrate': champ.wr_lane, 'ponderation': champ_value})
+
+
+    champs_suggested.sort(key=lambda x: x['ponderation'])
+    return champs_suggested[::-1]
