@@ -4,8 +4,8 @@ from sqlalchemy.orm import sessionmaker
 #SQLALCHEMY_DATABASE_URL = "sqlite:///./data.db"
 SQLALCHEMY_DATABASE_URL = URL.create(
     "mysql+pymysql",
-    username="LeagueOfLegends",
-    password="",
+    username="root",
+    password="@Peacer9811",
     host="127.0.0.1",
     database="league_of_legends",
 )

@@ -50,6 +50,19 @@
           </div>
         </div>
       </div>
+      <div class="buildRow-Container" v-if="abilities.length > 0">
+        <span>
+          {{ abilities.ability_order[0] }}
+        </span>
+        <img src="/static/useful_icons/arrow.png">
+        <span>
+          {{ abilities.ability_order[0] }}
+        </span>
+        <img src="/static/useful_icons/arrow.png">
+        <span>
+          {{ abilities.ability_order[0] }}
+        </span>
+      </div>
     </div>
   </div>
 </template>
@@ -61,6 +74,7 @@ export default {
   props: ['champ_id'],
   data() {
     return {
+      abilities: [],
       builds: [],
       build: {
         startingItems: [],
@@ -76,7 +90,8 @@ export default {
   },
   watch: {
     champ_id(newvalue, oldvalue) {
-      this.getBuild(newvalue)
+      this.getBuild()
+      this.getAbilities()
     }
   },
   methods: {
@@ -98,6 +113,17 @@ export default {
       this.build.legendaryItems = [build['legendary_1'], build['legendary_2'], build['legendary_3'], build['legendary_4']]
       this.build.trinketItems = [build['trinket_1'], build['trinket_2']]
       this.build.bootsItems = [build['boots_1'], build['boots_2']]
+    },
+    getAbilities () {
+      const path = 'http://localhost:8000/ability_set/' + this.champ_id
+      axios.get(path)
+        .then((res) => {
+          this.abilities = res.data
+          console.log(this.abilities)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }

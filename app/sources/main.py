@@ -80,6 +80,10 @@ def get_souls(db: Session = Depends(get_db)):
 def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
     return repository.get_build_by_champId(db=db, id=champ_id)
 
+@app.get("/ability_set/{champ_id}", response_model=schemas.AbilitySet)
+def get_abilities_by_champId(champ_id: int, db: Session = Depends(get_db)):
+    return repository.get_abilities_by_champId(db, champ_id)
+
 @app.get("/runes/{champ_id}", response_model=List[schemas.Runes])
 def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
     return repository.get_runes_by_champId(db=db, id=champ_id)

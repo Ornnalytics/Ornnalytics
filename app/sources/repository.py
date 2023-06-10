@@ -26,7 +26,6 @@ def get_build_by_champId(db: Session, id):
     db_data = db.execute(statement).all()
     champ = get_champ_by_champId(db=db, champ_id=id)
     globalBuild = ''
-
     for data in db_data:
         if data[0].line == champ.main_role or data[0].line == champ.secondary_role:
             print(data[0].line)
@@ -35,7 +34,21 @@ def get_build_by_champId(db: Session, id):
             globalBuild = data[0]
 
 
+    statement = select(models.AbilitySet).where(models.AbilitySet.champ_id == id)
+
+    db_data = db.execute(statement).first()
+
+    print(db_data)
+    print(db_data[0].ability_order)
+
     return globalBuild
+
+def get_abilities_by_champId(db: Session, id):
+    statement = select(models.AbilitySet).where(models.AbilitySet.champ_id == id)
+
+    data = db.execute(statement).first()
+    return data[0].ability_order
+
 
 def get_runes_by_champId(db: Session, id):
     return db.query(models.Runes).where(models.Runes.champ_id == id).all()

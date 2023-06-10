@@ -142,6 +142,17 @@ class Winrate_With(Base):
     elo_id = Column(String(6), primary_key=True)
     winrate = Column(Float, nullable=False)
 
+class AbilitySet(Base):
+    __tablename__ = "abilityset"
+
+    champ_id = Column(Integer, primary_key=True)
+    ability_order = Column(String(3), nullable=False)
+    q_key = Column(Integer, nullable=False)
+    w_key = Column(Integer, nullable=False)
+    e_key = Column(Integer, nullable=False)
+    r_key = Column(Integer, nullable=False)
+    passive_id = Column(Integer, nullable=False)
+
 '''
 # categories_list = ['Juvenil','Pro']
 # sports_list = ['Lol','Minecraft']

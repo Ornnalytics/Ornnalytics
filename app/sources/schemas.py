@@ -135,3 +135,13 @@ class WholeWinrate(BaseModel):
 class WholeWinrateInput(BaseModel):
     r_picks: List[int]
     b_picks: List[int]
+
+
+class AbilitySet(BaseModel):
+    champ_id: int
+    ability_order: str
+    q_key: int
+    w_key: int
+    e_key: int
+    r_key: int
+    passive_id: int
