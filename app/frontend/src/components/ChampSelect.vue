@@ -1,4 +1,5 @@
 <template>
+  <div id="mainContainer">
     <div class="champsIconsSelection">
       <div v-for="position in positions" v-bind:key="position.pos" class="champsIcon-Container">
         <button v-if="lado === 'blue'" class="selectIcon" :class="{setted: (myRole===position.role)}" @click="pickMyRole(position.role)">
@@ -14,14 +15,37 @@
         </button>
       </div>
     </div>
+    <div class="teamData-Container">
+      <div class="damageData-Container">
+        <span>
+          Winrate: {{(wr*100).toFixed(2)}}%
+        </span>
+        <br>
+        <span>
+          Daño del equipo
+        </span>
+        <div class="bar-Container">
+          <div id="AP">
+          </div>
+          <div id="AD">
+          </div>
+          <div id="TD">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'champ_selector',
   props: ['lado', 'rolePicked', 'champsPicked', 'myRole'],
   data () {
     return {
+      wr: 0,
       positions: [
         {
           'pos': 0,
@@ -46,6 +70,13 @@ export default {
       ]
     }
   },
+  watch: {
+    champsPicked: {
+      handler(newvalue, oldvalue) {
+        this.getTeamData()
+      }
+    }
+  },
   methods: {
     pickRole (role, event) {
       if (event.ctrlKey) {
@@ -55,6 +86,26 @@ export default {
     },
     pickMyRole (role) {
       this.$emit('pickMyRole', role)
+    },
+    getTeamData () {
+      const path = 'http://localhost:8000/team_data/'
+
+      console.log(this.champsPicked)
+
+      axios.post(path, {
+        picks: this.champsPicked
+      })
+        .then((res) => {
+          var champRec = res.data
+          document.getElementById('AP').setAttribute('style', 'width: ' + champRec.AP + '%;')
+          document.getElementById('AD').setAttribute('style', 'width: ' + champRec.AD + '%;')
+          document.getElementById('TD').setAttribute('style', 'width: ' + champRec.TD + '%;')
+          this.wr = champRec.WR
+          console.log('teamteamteamteam', champRec)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     }
   }
 }
@@ -119,6 +170,43 @@ button {
   border: 0px;
   background-color: transparent;
   cursor: pointer;
+}
+
+.teamData-Container {
+  padding: 20px;
+}
+
+.damageData-Container {
+  display: flex;
+  flex-direction: column;
+}
+
+.damageData-Container > span {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.bar-Container {
+  display: flex;
+  user-select: none;
+}
+
+#AP {
+  background-color: #2796BC;
+  width: 33%;
+  height: 20px;
+}
+
+#AD {
+  background-color: #E9422E;
+  widtH: 33%;
+  height: 20px;
+}
+
+#TD {
+  background-color: #AAA;
+  widtH: 33%;
+  height: 20px;
 }
 
 </style>

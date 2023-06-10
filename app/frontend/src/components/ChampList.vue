@@ -98,6 +98,7 @@ export default {
   flex-direction: row;
   justify-content: space-around;
   margin: 20px;
+  user-select: none;
 }
 
 .filter-role-container {

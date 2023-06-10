@@ -3,14 +3,28 @@
         <div id="champRec-Container">
           <div v-for="(champRec, i) in champ_rec" v-bind:key="i" class="champRec">
             <img :src="'/static/icons/' + champRec.champ_id + '.jpg'">
-            <span>{{ (champRec.winrate*100).toFixed(2) }}%</span>
-            <span>{{ (champRec.ponderation*100).toFixed(2) }}%</span>
+            <span>winrate {{ (champRec.winrate*100).toFixed(2) }}%</span>
+            <span>wr_ag_lane {{ (champRec.wr_ag_lane).toFixed(4) }}</span>
+            <span>wr_ag_team {{ (champRec.wr_ag_team).toFixed(4) }}</span>
+            <span>wr_with {{ (champRec.wr_with).toFixed(4) }}</span>
+            <span>wr_total {{ (champRec.wr_total).toFixed(4) }}</span>
+            <span>engage {{ (champRec.engage).toFixed(4) }}</span>
+            <span>time {{ (champRec.timemod).toFixed(4) }}</span>
+            <span>diff {{ (champRec.difficulty).toFixed(4) }}</span>
+            <span>tank {{ (champRec.tank).toFixed(4) }}</span>
+            <span>damage {{ (champRec.damage).toFixed(4) }}</span>
+            <span>multiplier {{ (champRec.multiplier).toFixed(4) }}</span>
+            <span>ponderation {{ (champRec.ponderation*100).toFixed(2) }}%</span>
+
           </div>
         </div>
     </div>
 </template>
 
 
+    wr_ag_lane: Optional[float] = 0
+    wr_ag_team: Optional[float] = 0
+    wr_team: Optional[float] = 0
 <script>
 
 import axios from 'axios'
@@ -25,11 +39,6 @@ export default {
         pos: '',
         role: ''
       }
-  },
-  created () {
-    if (this.pos !== '' && this.role !== '') {
-      this.getChampRec()
-    }
   },
   watch: {
     b_picks: {
@@ -60,6 +69,7 @@ export default {
           this.pos = 'r_' + newvalue
           this.role = newvalue
         }
+        if (newvalue === '') return
         this.getChampRec()
       }
     },
@@ -69,6 +79,7 @@ export default {
           this.pos = 'b_' + newvalue
           this.role = newvalue
         }
+        if (newvalue === '') return
         this.getChampRec()
       }
     }
@@ -127,6 +138,7 @@ export default {
   user-select: none;
 
   margin: 20px;
+  width: 140px;
 }
 
 .champRec > img {
