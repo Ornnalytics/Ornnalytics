@@ -56,6 +56,8 @@ export default {
   flex-direction: row;
   align-items: center;
 
+  user-select: none;
+
   height: 100%;
   width: 100%;
   background-color: lightgrey;

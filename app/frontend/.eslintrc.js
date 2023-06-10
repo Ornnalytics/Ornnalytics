@@ -29,6 +29,7 @@ module.exports = {
     'no-multiple-empty-lines': 'off',
     'space-before-function-paren': 'off',
     'eol-last': 'off',
-    'no-undef': 'off'
+    'no-undef': 'off',
+    'brace-style': 'off'
   }
 }

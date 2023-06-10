@@ -2,7 +2,9 @@
     <div>
         <div class="filter-icons-header">
           <div class="filter-role-container">
-            <button v-for="role in roleOptions" v-bind:key="role" class="filter-role-button" :class="{ not_selected: (selectedRole !== 'ANY' && role !== selectedRole)}" @click="roleSelectedInput(role)">
+            <button v-for="role in roleOptions" v-bind:key="role" class="filter-role-button"
+                    :class="{ not_selected: (selectedRole !== 'ANY' && role !== selectedRole)}"
+                    @click="roleSelectedInput(role)">
               <img :src="'/static/lane_icons/'+ role +'.png'" class="filter-role-image">
             </button>
           </div>
@@ -40,14 +42,20 @@ export default {
   methods: {
     getChamps () {
       const pathChamps = 'http://localhost:8000/champs'
+      console.log('H?')
       axios.get(pathChamps)
         .then((res) => {
-          this.champList = res.data
+          console.log('WTf')
+          this.champList = res.data.sort((a, b) => (a.name > b.name) ? 1 : -1)
           console.log(this.champList)
         })
         .catch((error) => {
           console.error(error)
         })
+        .finally(() => {
+          console.log('It tried i guess')
+        })
+      console.log('Ciau')
     },
     onSearchInput (ev) {
       this.searchFilter = ev.target.value
@@ -74,8 +82,8 @@ export default {
       }
       this.$forceUpdate()
     },
-    setChamp (champ_id) {
-      this.$emit('setChamp', champ_id)
+    setChamp (champId) {
+      this.$emit('setChamp', champId)
     }
   }
 }
@@ -143,8 +151,17 @@ export default {
   padding: 0px;
 }
 
+.champIcon > button {
+  cursor: pointer;
+  user-select: none;
+}
+
 img {
   width: 90px;
+}
+
+.champName {
+  user-select: none;
 }
 
 .custom-select {

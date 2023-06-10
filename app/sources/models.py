@@ -13,10 +13,15 @@ class Champ(Base):
     champ_id = Column(Integer, primary_key=True)
     name = Column(String(45), nullable=False)
     type = Column(String(45), nullable=False)
-    main_role = Column(String(3), nullable=True)
-    secondary_role = Column(String(3), nullable=False)
+    main_role = Column(String(3), nullable=False)
+    secondary_role = Column(String(3), nullable=True)
     timeline_results = Column(String(6), nullable=False)
-
+    difficulty_level = Column(Integer, nullable=False)
+    engage = Column(Boolean, nullable=False)
+    disengage = Column(Boolean, nullable=False)
+    AP = Column(Float, nullable=False)
+    AD = Column(Float, nullable=False)
+    TrueDamage = Column(Float, nullable=False)
 
 class Soul(Base):
     __tablename__ = 'soul_drake'
@@ -95,6 +100,47 @@ class PerkStyle(Base):
     style_id = Column(Integer, primary_key=True)
     name = Column(String(45), nullable=False)
     tooltip = Column(String(45), nullable=False)
+
+class Winrate(Base):
+    __tablename__ = "winrates"
+
+    champ_id = Column(Integer, primary_key=True)
+    elo_id = Column(String(10), nullable=False)
+    winrate_top_b = Column(Float, nullable=True)
+    winrate_jgl_b = Column(Float, nullable=True)
+    winrate_mid_b = Column(Float, nullable=True)
+    winrate_adc_b = Column(Float, nullable=True)
+    winrate_sup_b = Column(Float, nullable=True)
+    winrate_top_r = Column(Float, nullable=True)
+    winrate_jgl_r = Column(Float, nullable=True)
+    winrate_mid_r = Column(Float, nullable=True)
+    winrate_adc_r = Column(Float, nullable=True)
+    winrate_sup_r = Column(Float, nullable=True)
+    winrate_top = Column(Float, nullable=True)
+    winrate_jgl = Column(Float, nullable=True)
+    winrate_mid = Column(Float, nullable=True)
+    winrate_adc = Column(Float, nullable=True)
+    winrate_sup = Column(Float, nullable=True)
+    winrate_global = Column(Float, nullable=False)
+
+class Winrate_Against(Base):
+    __tablename__ = "winrates_against"
+
+    champ_id = Column(Integer, primary_key=True)
+    champ_against_id = Column(Integer, primary_key=True)
+    line = Column(String(6), primary_key=True)
+    elo = Column(String(6), primary_key=True)
+    winrate = Column(Float, nullable=False)
+
+class Winrate_With(Base):
+    __tablename__ = "winrates_with"
+
+    champ_a_id = Column(Integer, primary_key=True)
+    champ_b_id = Column(Integer, primary_key=True)
+    line_a = Column(String(6), primary_key=True)
+    line_b = Column(String(6), primary_key=True)
+    elo_id = Column(String(6), primary_key=True)
+    winrate = Column(Float, nullable=False)
 
 '''
 # categories_list = ['Juvenil','Pro']

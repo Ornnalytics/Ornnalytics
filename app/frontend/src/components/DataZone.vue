@@ -1,10 +1,10 @@
 <template>
   <div id="mainContent">
     <div id="champRecommendations">
-      <champRec></champRec>
+      <champRec :b_picks="b_picks" :b_pos="b_pos" :r_picks="r_picks" :r_pos="r_pos"></champRec>
     </div>
     <div id="configRecommendation">
-      <configRec></configRec>
+      <configRec :b_picks="b_picks" :b_pos="b_pos" :r_picks="r_picks" :r_pos="r_pos"></configRec>
     </div>
     <div id="drakeInfo">
       <drakeInfo></drakeInfo>
@@ -19,19 +19,7 @@ import configRec from './ConfigRec.vue'
 import drakeInfo from './DrakeInfo.vue'
 
 export default {
-  data () {
-    return {
-      message: 'My first component',
-      blue_side: 'blue',
-      red_side: 'red',
-      ticketsBought: 0,
-      ticketsTotal: 200,
-      moneyAvailable: 29.02,
-      priceMatch: 5,
-      matches_added: [],
-      champs: []
-    }
-  },
+  props: ['r_picks', 'b_picks', 'r_pos', 'b_pos'],
   components: {
     champRec,
     configRec,

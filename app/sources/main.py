@@ -78,15 +78,46 @@ def get_souls(db: Session = Depends(get_db)):
 
 @app.get("/build/{champ_id}", response_model=List[schemas.Build])
 def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
-    a = repository.get_build_by_champId(db=db, id=champ_id)
-    print(a)
-    return a
+    return repository.get_build_by_champId(db=db, id=champ_id)
 
 @app.get("/runes/{champ_id}", response_model=List[schemas.Runes])
 def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
     return repository.get_runes_by_champId(db=db, id=champ_id)
 
-'''
+@app.post("/suggestion/", response_model=List[schemas.Suggestion])
+def get_champSuggestion(suggData: schemas.SuggestionInput, db: Session = Depends(get_db)):
+    lineDict = {'TOP': 0, 'JGL': 1, 'MID': 2, 'ADC': 3, 'SUP': 4}
+    print("AAAAAAAAAAAAAAAAA")
+    print(suggData)
+
+    anyPick = False
+    for pick in suggData.picks:
+        if pick != 0:
+            anyPick = True
+
+    if anyPick:
+        blue_picks = suggData.picks[:5]
+        red_picks = suggData.picks[5:]
+        print(blue_picks, " || " ,red_picks)
+
+        ally_team = blue_picks if suggData.player[0] == 'b' else red_picks
+        enemy_team = blue_picks if suggData.player[0] != 'b' else red_picks
+
+        print("ENTERING THE DUNGEOOON:", suggData.role, ally_team, enemy_team)
+        dataSuggestion = repository.get_sugestions(db=db, role=suggData.role, ally_team=ally_team, enemy_team=enemy_team)
+
+    else:
+        dataSuggestion = repository.get_winrateOfLine(db, suggData.role, suggData.player[0])
+
+    print(dataSuggestion)
+    return dataSuggestion
+
+'''champ_a_id = Column(Integer, primary_key=True)
+    champ_b_id = Column(Integer, primary_key=True)
+    line_a = Column(String(6), primary_key=True)
+    line_b = Column(String(6), primary_key=True)
+    elo_id = Column(String(6), primary_key=True)
+    winrate
 ##########################################
 ############ Acciones TEAMS ##############
 ##########################################

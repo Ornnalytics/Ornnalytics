@@ -96,6 +96,20 @@ class PerkStyle(BaseModel):
     name: str
     tooltip: str
 
+class SuggestionInput(BaseModel):
+    picks: List[int]
+    player: str
+    role: str
+    timeline: str
+
+class Suggestion(BaseModel):
+    champ_id: int
+    winrate: float
+    ponderation: float
+
+    class Config:
+        orm_mode = True
+
 '''
 class TeamBase(BaseModel):
     name: str

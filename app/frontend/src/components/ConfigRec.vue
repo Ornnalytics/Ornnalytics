@@ -1,15 +1,15 @@
 <template>
     <div id="mainContent">
-      <div v-if="this.champ_id !== 0" style="display: flex; align-items: center; flex: 1 1 auto;">
+      <div v-if="champId !== 0" style="display: flex; align-items: center; flex: 1 1 auto;">
         <div v-if="this.runes.length > 0" id="runeDisplay-Container">
           <runeDisplay :configuration='this.runes'></runeDisplay>
         </div>
         <div id="buildDisplay-Container">
-          <buildDisplay :champ_id='this.champ_id'></buildDisplay>
+          <buildDisplay :champ_id='champId'></buildDisplay>
         </div>
       </div>
-      <div v-else>
-        Para ver las recomendaciones, pickea :P.
+      <div v-else style="margin: auto; font-size: 1.5rem; text-align: center;">
+        Para ver las recomendaciones, primero pickea un lado y linea, y luego un champ!
       </div>
     </div>
 </template>
@@ -22,26 +22,35 @@ import runeDisplay from './RuneDisplay.vue'
 import buildDisplay from './BuildDisplay.vue'
 
 export default {
+  props: ['r_picks', 'b_picks', 'r_pos', 'b_pos'],
   data() {
       return {
-        champ_id: 777,
+        champ_id: 0,
         build: [],
-        runes: []
+        runes: [],
+        roleDict: {'TOP': 0, 'JGL': 1, 'MID': 2, 'ADC': 3, 'SUP': 4}
       }
   },
-  created () {
-    if (this.champ_id !== 0) {
-      // this.getChampBuild()
-      this.getChampRunes()
+  computed: {
+    champId: function() {
+      if (this.r_pos !== '') {
+        this.getChampRunes(this.r_picks[this.roleDict[this.r_pos]])
+        return this.r_picks[this.roleDict[this.r_pos]]
+      } else if (this.b_pos !== '') {
+        this.getChampRunes(this.b_picks[this.roleDict[this.b_pos]])
+        return this.b_picks[this.roleDict[this.b_pos]]
+      } else {
+        return 0
+      }
     }
   },
   methods: {
-    getChampRunes () {
-      const path = 'http://localhost:8000/runes/' + this.champ_id
+    getChampRunes (champId) {
+      const path = 'http://localhost:8000/runes/' + champId
       axios.get(path)
         .then((res) => {
           this.runes = res.data
-          console.log('Runes: ', this.runes)
+          this.runes.sort((a, b) => (a.line === b.line && a.opt > b.opt) ? 1 : (a.line === this.r_pos || a.line === this.b_pos) ? -1 : 1)
         })
         .catch((error) => {
           console.error(error)

@@ -6,7 +6,7 @@
         <div>
           <p id='itemTitle'>Starting Items</p>
           <div id='starting-Container'>
-            <div v-for='(item,i) in build.startingItems' v-bind:key="i">
+            <div v-for='(item,i) in build.startingItems' v-bind:key="i" v-show="item !== 0">
               <img :src="'/static/item_icons/'+ item +'.png'" class="itemImage">
             </div>
           </div>
@@ -14,7 +14,7 @@
         <div>
           <p id='itemTitle'>Mythic Items</p>
           <div id='mythic-Container'>
-            <div v-for='(item,i) in build.mythicItems' v-bind:key="i">
+            <div v-for='(item,i) in build.mythicItems' v-bind:key="i" v-show="item !== 0">
               <img :src="'/static/item_icons/'+ item +'.png'" class="itemImage">
             </div>
           </div>
@@ -24,15 +24,17 @@
         <div>
           <p id='itemTitle'>Boots Items</p>
           <div id='boots-Container'>
-            <div v-for='(item,i) in build.bootsItems' v-bind:key="i">
+            <div v-for='(item,i) in build.bootsItems' v-bind:key="i" v-show="item !== 0">
               <img :src="'/static/item_icons/'+ item +'.png'" class="itemImage">
+            </div>
+            <div class="itemImage" v-show="(build.bootsItems[0]===0 && build.bootsItems[1]===0)">
             </div>
           </div>
         </div>
         <div>
           <p id='itemTitle'>Legendary Items</p>
           <div id='legendary-Container'>
-            <div v-for='(item, i) in build.legendaryItems' v-bind:key="i">
+            <div v-for='(item, i) in build.legendaryItems' v-bind:key="i" v-show="item !== 0">
               <img :src="'/static/item_icons/'+ item +'.png'" class="itemImage">
             </div>
           </div>
@@ -42,7 +44,7 @@
         <div>
           <p id='itemTitle'>Trinket Items</p>
           <div id='trinket-Container'>
-            <div v-for='(item, i) in build.trinketItems' v-bind:key="i">
+            <div v-for='(item, i) in build.trinketItems' v-bind:key="i" v-show="item !== 0">
               <img :src="'/static/item_icons/'+ item +'.png'" class="itemImage">
             </div>
           </div>
@@ -72,6 +74,11 @@ export default {
   created() {
     this.getBuild(this.champ_id)
   },
+  watch: {
+    champ_id(newvalue, oldvalue) {
+      this.getBuild(newvalue)
+    }
+  },
   methods: {
     getBuild () {
       const path = 'http://localhost:8000/build/' + this.champ_id
@@ -91,7 +98,6 @@ export default {
       this.build.legendaryItems = [build['legendary_1'], build['legendary_2'], build['legendary_3'], build['legendary_4']]
       this.build.trinketItems = [build['trinket_1'], build['trinket_2']]
       this.build.bootsItems = [build['boots_1'], build['boots_2']]
-      console.log(this.build)
     }
   }
 }

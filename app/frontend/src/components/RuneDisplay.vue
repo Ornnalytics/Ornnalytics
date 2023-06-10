@@ -18,15 +18,15 @@
         </div>
         <div id="perks-Container">
           <div id="mainPerks-Container">
-            <div class="perk" v-for="(perk, i) in this.runesDisplayed.main" v-bind:key="i">
+            <div class="perk" v-for="(perk, i) in this.runesDisplayed.main" v-bind:key="'A' + i">
               <img :src="'/static/perk_icons/'+ perk +'.png'">
             </div>
           </div>
           <div id="secPerks-Container">
-            <div class="perk" v-for="(perk, i) in this.runesDisplayed.secondary" v-bind:key="i">
+            <div class="perk" v-for="(perk, i) in this.runesDisplayed.secondary" v-bind:key="'B' + i">
               <img :src="'/static/perk_icons/'+ perk +'.png'">
             </div>
-            <div class="lastPerk" v-for="(perk, i) in this.runesDisplayed.lastPerks" v-bind:key="i">
+            <div class="lastPerk" v-for="(perk, i) in this.runesDisplayed.lastPerks" v-bind:key="'C' + i">
               <img :src="'/static/perk_icons/'+ perk +'.png'">
             </div>
           </div>
@@ -35,6 +35,11 @@
       <button class="changeButton" @click="changeRunes('right')">
         <img src="/static/useful_icons/arrow.png" style="transform: rotate(180deg)">
       </button>
+    </div>
+    <div style="display: flex; justify-content: center;">
+      <span>
+        {{ runePos+1 }}/{{ runes.length }}
+      </span>
     </div>
   </div>
 </template>
@@ -45,6 +50,7 @@ export default {
   props: ['configuration'],
   data() {
     return {
+      runes: [],
       runesDisplayed: {},
       runePos: 0,
       runesDict: {}
@@ -52,10 +58,21 @@ export default {
   },
   created() {
     console.log(this.configuration)
-    this.adaptRunes(this.configuration[this.runePos])
+    this.runes = this.configuration
+    this.adaptRunes(this.runes[this.runePos])
+  },
+  watch: {
+    configuration: {
+      handler(newvalue, oldvalue) {
+        this.runePos = 0
+        this.adaptRunes(newvalue[this.runePos])
+        this.runes = newvalue
+      }
+    }
   },
   methods: {
     adaptRunes (runes) {
+      this.runesDisplayed = {}
       this.runesDisplayed.champ_id = runes.champ_id
       this.runesDisplayed.line = runes.line
       this.runesDisplayed.option = runes.opt
@@ -86,19 +103,19 @@ export default {
     changeRunes (side) {
       if (side === 'left') {
         if (this.runePos === 0) {
-          this.runePos = this.configuration.length - 1
+          this.runePos = this.runes.length - 1
         } else {
           this.runePos -= 1
         }
       } else if (side === 'right') {
-        if (this.runePos === this.configuration.length - 1) {
+        if (this.runePos === this.runes.length - 1) {
           this.runePos = 0
         } else {
           this.runePos += 1
         }
       }
 
-      this.adaptRunes(this.configuration[this.runePos])
+      this.adaptRunes(this.runes[this.runePos])
     }
   }
 }

@@ -1,35 +1,63 @@
 <template>
     <div class="champsIconsSelection">
-        <button class="champIconSelection roleTOP" :class="{[lado]: true, picked: (this.rolePicked==='TOP'), setted: (this.champsPicked[0] !== 0)}" @click="pickRole('TOP')">
-          <img :src="'/static/icons/'+ this.champsPicked[0] +'.jpg'" v-if="this.champsPicked[0] !== 0">
+      <div v-for="position in positions" v-bind:key="position.pos" class="champsIcon-Container">
+        <button v-if="lado === 'blue'" class="selectIcon" :class="{setted: (myRole===position.role)}" @click="pickMyRole(position.role)">
+          <img src="/static/useful_icons/arrow.png" style="transform: rotate(180deg)">
         </button>
-        <button class="champIconSelection roleJGL" :class="{[lado]: true, picked: (this.rolePicked==='JGL'), setted: (this.champsPicked[1] !== 0)}" @click="pickRole('JGL')">
-          <img :src="'/static/icons/'+ this.champsPicked[1] +'.jpg'" v-if="this.champsPicked[1] !== 0">
+        <button class="champIconSelection"
+                :class="{[lado]: true, picked: (rolePicked && rolePicked===position.role), setted: (champsPicked[position.pos] !== 0)}"
+                @click="pickRole(position.role, $event)">
+          <img :src="'/static/icons/'+ champsPicked[position.pos] +'.jpg'" v-if="champsPicked[position.pos] !== 0">
         </button>
-        <button class="champIconSelection roleMID" :class="{[lado]: true, picked: (this.rolePicked==='MID'), setted: (this.champsPicked[2] !== 0)}" @click="pickRole('MID')">
-          <img :src="'/static/icons/'+ this.champsPicked[2] +'.jpg'" v-if="this.champsPicked[2] !== 0">
+        <button v-if="lado === 'red'" style="transform: rotate(180deg)"  class="selectIcon" :class="{setted: (myRole===position.role)}" @click="pickMyRole(position.role)">
+          <img src="/static/useful_icons/arrow.png" style="transform: rotate(180deg)">
         </button>
-        <button class="champIconSelection roleADC" :class="{[lado]: true, picked: (this.rolePicked==='ADC'), setted: (this.champsPicked[3] !== 0)}" @click="pickRole('ADC')">
-          <img :src="'/static/icons/'+ this.champsPicked[3] +'.jpg'" v-if="this.champsPicked[3] !== 0">
-        </button>
-        <button class="champIconSelection roleSUP" :class="{[lado]: true, picked: (this.rolePicked==='SUP'), setted: (this.champsPicked[4] !== 0)}" @click="pickRole('SUP')">
-          <img :src="'/static/icons/'+ this.champsPicked[4] +'.jpg'" v-if="this.champsPicked[4] !== 0">
-        </button>
+      </div>
     </div>
 </template>
 
 <script>
-
 export default {
   name: 'champ_selector',
-  props: ['lado', 'rolePicked', 'champsPicked'],
+  props: ['lado', 'rolePicked', 'champsPicked', 'myRole'],
+  data () {
+    return {
+      positions: [
+        {
+          'pos': 0,
+          'role': 'TOP'
+        },
+        {
+          'pos': 1,
+          'role': 'JGL'
+        },
+        {
+          'pos': 2,
+          'role': 'MID'
+        },
+        {
+          'pos': 3,
+          'role': 'ADC'
+        },
+        {
+          'pos': 4,
+          'role': 'SUP'
+        }
+      ]
+    }
+  },
   methods: {
-    pickRole (role) {
+    pickRole (role, event) {
+      if (event.ctrlKey) {
+        this.$emit('unPickChamp', role)
+      }
       this.$emit('pickRole', role)
+    },
+    pickMyRole (role) {
+      this.$emit('pickMyRole', role)
     }
   }
 }
-
 </script>
 
 <style scoped>
@@ -45,7 +73,6 @@ export default {
   border-radius: 50%;
   width: 100px;
   height: 100px;
-  margin: 30px;
 }
 
 .champIconSelection > img {
@@ -54,12 +81,29 @@ export default {
   height: 100px;
 }
 
+.champsIcon-Container {
+  display: flex;
+  flex-direction: row;
+  margin: 30px;
+}
+
 .blue {
   box-shadow: 0 0 7px blue;
 }
 
 .red {
   box-shadow: 0 0 7px red;
+}
+
+.selectIcon {
+  opacity: 0.2;
+  padding: 5px;
+}
+
+.selectIcon>img {
+  width: 20px;
+  height: 20px;
+  margin: 10px;
 }
 
 .picked {
