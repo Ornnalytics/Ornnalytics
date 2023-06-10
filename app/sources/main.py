@@ -76,7 +76,7 @@ def get_souls(db: Session = Depends(get_db)):
     print(ret)
     return ret
 
-@app.get("/build/{champ_id}", response_model=List[schemas.Build])
+@app.get("/build/{champ_id}", response_model=schemas.Build)
 def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
     return repository.get_build_by_champId(db=db, id=champ_id)
 
@@ -87,7 +87,6 @@ def get_build_by_champId(champ_id: str, db: Session = Depends(get_db)):
 @app.post("/suggestion/", response_model=List[schemas.Suggestion])
 def get_champSuggestion(suggData: schemas.SuggestionInput, db: Session = Depends(get_db)):
     lineDict = {'TOP': 0, 'JGL': 1, 'MID': 2, 'ADC': 3, 'SUP': 4}
-    print("AAAAAAAAAAAAAAAAA")
     print(suggData)
 
     anyPick = False
@@ -98,18 +97,15 @@ def get_champSuggestion(suggData: schemas.SuggestionInput, db: Session = Depends
     if anyPick:
         blue_picks = suggData.picks[:5]
         red_picks = suggData.picks[5:]
-        print(blue_picks, " || " ,red_picks)
 
         ally_team = blue_picks if suggData.player[0] == 'b' else red_picks
         enemy_team = blue_picks if suggData.player[0] != 'b' else red_picks
 
-        print("ENTERING THE DUNGEOOON:", suggData.role, ally_team, enemy_team)
         dataSuggestion = repository.get_sugestions(db=db, role=suggData.role, ally_team=ally_team, enemy_team=enemy_team)
 
     else:
         dataSuggestion = repository.get_winrateOfLine(db, suggData.role, suggData.player[0])
 
-    print(dataSuggestion)
     return dataSuggestion
 
 @app.post("/team_data/", response_model=schemas.TeamData)
@@ -136,3 +132,14 @@ def get_teamData(teamData: schemas.TeamDataInput, db: Session = Depends(get_db))
     WR = repository.get_winrateOfTeam(db=db, team=teamData.picks)
 
     return {'AP': AP, 'AD': AD, 'TD': TD, 'WR': WR}
+
+
+@app.post("/whole_winrate/", response_model=schemas.WholeWinrate)
+def get_teamData(wholeWinrate: schemas.WholeWinrateInput, db: Session = Depends(get_db)):
+    r_WR = repository.get_winrateOfTeam(db=db, team=wholeWinrate.r_picks)
+    b_WR = repository.get_winrateOfTeam(db=db, team=wholeWinrate.b_picks)
+
+    total = (r_WR + b_WR)
+    if total == 0:
+        return {'r_WR': 0.5, 'b_WR': 0.5}
+    return {'r_WR': r_WR/total, 'b_WR': b_WR/total}

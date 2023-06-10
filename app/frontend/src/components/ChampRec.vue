@@ -3,18 +3,21 @@
         <div id="champRec-Container">
           <div v-for="(champRec, i) in champ_rec" v-bind:key="i" class="champRec">
             <img :src="'/static/icons/' + champRec.champ_id + '.jpg'">
-            <span>winrate {{ (champRec.winrate*100).toFixed(2) }}%</span>
-            <span>wr_ag_lane {{ (champRec.wr_ag_lane).toFixed(4) }}</span>
-            <span>wr_ag_team {{ (champRec.wr_ag_team).toFixed(4) }}</span>
-            <span>wr_with {{ (champRec.wr_with).toFixed(4) }}</span>
-            <span>wr_total {{ (champRec.wr_total).toFixed(4) }}</span>
-            <span>engage {{ (champRec.engage).toFixed(4) }}</span>
-            <span>time {{ (champRec.timemod).toFixed(4) }}</span>
-            <span>diff {{ (champRec.difficulty).toFixed(4) }}</span>
-            <span>tank {{ (champRec.tank).toFixed(4) }}</span>
-            <span>damage {{ (champRec.damage).toFixed(4) }}</span>
-            <span>multiplier {{ (champRec.multiplier).toFixed(4) }}</span>
-            <span>ponderation {{ (champRec.ponderation*100).toFixed(2) }}%</span>
+            <!--
+            <span>winrate <br>{{ (champRec.winrate*100).toFixed(2) }}%</span>
+            <span>wr_ag_lane <br>{{ (champRec.wr_ag_lane).toFixed(4) }}</span>
+            <span>wr_ag_team <br>{{ (champRec.wr_ag_team).toFixed(4) }}</span>
+            <span>wr_with <br>{{ (champRec.wr_with).toFixed(4) }}</span>
+            <span>wr_total <br>{{ (champRec.wr_total).toFixed(4) }}</span>
+            <span>engage <br>{{ (champRec.engage).toFixed(4) }}</span>
+            <span>time <br>{{ (champRec.timemod).toFixed(4) }}</span>
+            <span>difficulty <br>{{ (champRec.difficulty).toFixed(4) }}</span>
+            <span>tank <br>{{ (champRec.tank).toFixed(4) }}</span>
+            <span>damage <br>{{ (champRec.damage).toFixed(4) }}</span>
+            <span>multiplier <br>{{ (champRec.multiplier).toFixed(4) }}</span>
+            <span>ponderacion <br>{{ (champRec.ponderation*100).toFixed(2) }}%</span>
+            --->
+            <span>{{ (champRec.ponderation*100).toFixed(2) }}%</span>
 
           </div>
         </div>
@@ -100,7 +103,7 @@ export default {
         timeline: '021122'
       })
         .then((res) => {
-          this.champ_rec = res.data
+          this.champ_rec = res.data.slice(0, 6)
           console.log('AAAAAAAAA', this.champ_rec)
         })
         .catch((error) => {
@@ -133,12 +136,12 @@ export default {
   flex-direction: column;
   align-content: center;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 
   user-select: none;
 
   margin: 20px;
-  width: 140px;
+  width: fit-content;
 }
 
 .champRec > img {

@@ -18,18 +18,18 @@
     <div class="teamData-Container">
       <div class="damageData-Container">
         <span>
-          Winrate: {{(wr*100).toFixed(2)}}%
+          Winrate: {{(winrate*100).toFixed(2)}}%
         </span>
         <br>
         <span>
           Daño del equipo
         </span>
         <div class="bar-Container">
-          <div id="AP">
+          <div id="AP" ref="APval">
           </div>
-          <div id="AD">
+          <div id="AD" ref="ADval">
           </div>
-          <div id="TD">
+          <div id="TD" ref="TDval">
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@ import axios from 'axios'
 
 export default {
   name: 'champ_selector',
-  props: ['lado', 'rolePicked', 'champsPicked', 'myRole'],
+  props: ['lado', 'rolePicked', 'champsPicked', 'myRole', 'winrate'],
   data () {
     return {
       wr: 0,
@@ -97,11 +97,16 @@ export default {
       })
         .then((res) => {
           var champRec = res.data
-          document.getElementById('AP').setAttribute('style', 'width: ' + champRec.AP + '%;')
-          document.getElementById('AD').setAttribute('style', 'width: ' + champRec.AD + '%;')
-          document.getElementById('TD').setAttribute('style', 'width: ' + champRec.TD + '%;')
-          this.wr = champRec.WR
-          console.log('teamteamteamteam', champRec)
+          if (champRec.AP === 0 && champRec.AD === 0 && champRec.TD === 0) {
+            this.$refs.APval.setAttribute('style', 'width: ' + 33 + '%;')
+            this.$refs.ADval.setAttribute('style', 'width: ' + 33 + '%;')
+            this.$refs.TDval.setAttribute('style', 'width: ' + 33 + '%;')
+          }
+          else {
+            this.$refs.APval.setAttribute('style', 'width: ' + champRec.AP + '%;')
+            this.$refs.ADval.setAttribute('style', 'width: ' + champRec.AD + '%;')
+            this.$refs.TDval.setAttribute('style', 'width: ' + champRec.TD + '%;')
+          }
         })
         .catch((error) => {
           console.error(error)

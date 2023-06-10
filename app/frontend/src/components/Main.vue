@@ -3,14 +3,14 @@
     <div id="champZone">
       <div id="blueChampSelect">
         <champSelect :lado="'blue'" :rolePicked="b_rolePicked" :champsPicked="b_champsPicked" :myRole="b_myRole"
-                     @pickRole="pickRoleB" @pickMyRole="pickMyRoleB" @unPickChamp="unPickChampB"></champSelect>
+                     :winrate="b_winrate" @pickRole="pickRoleB" @pickMyRole="pickMyRoleB" @unPickChamp="unPickChampB"></champSelect>
       </div>
       <div id="champList">
         <champList @setChamp="setChamp"></champList>
       </div>
       <div id="redChampSelect">
         <champSelect :lado="'red'" :rolePicked="r_rolePicked" :champsPicked="r_champsPicked" :myRole="r_myRole"
-                     @pickRole="pickRoleR" @pickMyRole="pickMyRoleR" @unPickChamp="unPickChampR"></champSelect>
+                     :winrate="r_winrate" @pickRole="pickRoleR" @pickMyRole="pickMyRoleR" @unPickChamp="unPickChampR"></champSelect>
       </div>
     </div>
 
@@ -22,6 +22,7 @@
 import champList from './ChampList.vue'
 import champSelect from './ChampSelect.vue'
 import dataZone from './DataZone.vue'
+import axios from 'axios'
 
 export default {
   data () {
@@ -33,6 +34,8 @@ export default {
       r_champsPicked: [0, 0, 0, 0, 0],
       r_myRole: '',
       b_myRole: '',
+      r_winrate: 0.5,
+      b_winrate: 0.5,
       roleDict: {'TOP': 0, 'JGL': 1, 'MID': 2, 'ADC': 3, 'SUP': 4}
     }
   },
@@ -41,16 +44,18 @@ export default {
       this.b_rolePicked = role
       this.r_rolePicked = ''
       if (this.pickedChamp !== '') {
-        this.b_champsPicked[this.roleDict[this.b_rolePicked]] = this.pickedChamp
+        this.$set(this.b_champsPicked, this.roleDict[this.b_rolePicked], this.pickedChamp)
         this.pickedChamp = ''
+        this.winrateCalc()
       }
     },
     pickRoleR (role) {
       this.b_rolePicked = ''
       this.r_rolePicked = role
       if (this.pickedChamp !== '') {
-        this.r_champsPicked[this.roleDict[this.r_rolePicked]] = this.pickedChamp
+        this.$set(this.r_champsPicked, this.roleDict[this.r_rolePicked], this.pickedChamp)
         this.pickedChamp = ''
+        this.winrateCalc()
       }
     },
     pickMyRoleB (role) {
@@ -63,9 +68,30 @@ export default {
     },
     unPickChampR (role) {
       this.$set(this.r_champsPicked, [this.roleDict[role]], 0)
+      this.winrateCalc()
     },
     unPickChampB (role) {
       this.$set(this.b_champsPicked, [this.roleDict[role]], 0)
+      this.winrateCalc()
+    },
+    winrateCalc () {
+      const path = 'http://localhost:8000/whole_winrate/'
+
+      axios.post(path, {
+        r_picks: this.r_champsPicked,
+
+        b_picks: this.b_champsPicked
+      })
+        .then((res) => {
+          var champRec = res.data
+
+          this.r_winrate = champRec.r_WR
+          this.b_winrate = champRec.b_WR
+          console.log('wrwrwrwrwr', champRec)
+        })
+        .catch((error) => {
+          console.error(error)
+        })
     },
     setChamp (champId) {
       this.pickedChamp = champId
@@ -110,6 +136,8 @@ export default {
         this.$set(this.r_champsPicked, this.roleDict[this.r_rolePicked], this.pickedChamp)
         this.pickedChamp = ''
       }
+
+      this.winrateCalc()
     }
   },
   components: {

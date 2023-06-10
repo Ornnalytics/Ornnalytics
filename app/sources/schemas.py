@@ -127,4 +127,11 @@ class TeamData(BaseModel):
     AP: float
     AD: float
     TD: float
-    WR: float
+
+class WholeWinrate(BaseModel):
+    r_WR: float
+    b_WR: float
+
+class WholeWinrateInput(BaseModel):
+    r_picks: List[int]
+    b_picks: List[int]

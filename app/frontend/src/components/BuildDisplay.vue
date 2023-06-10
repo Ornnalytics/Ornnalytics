@@ -84,9 +84,9 @@ export default {
       const path = 'http://localhost:8000/build/' + this.champ_id
       axios.get(path)
         .then((res) => {
-          this.builds = res.data
+          this.build = res.data
           console.log(this.builds)
-          this.adaptBuild(this.builds[0])
+          this.adaptBuild(this.build)
         })
         .catch((error) => {
           console.error(error)

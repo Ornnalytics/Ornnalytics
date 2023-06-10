@@ -42,20 +42,14 @@ export default {
   methods: {
     getChamps () {
       const pathChamps = 'http://localhost:8000/champs'
-      console.log('H?')
       axios.get(pathChamps)
         .then((res) => {
-          console.log('WTf')
           this.champList = res.data.sort((a, b) => (a.name > b.name) ? 1 : -1)
           console.log(this.champList)
         })
         .catch((error) => {
           console.error(error)
         })
-        .finally(() => {
-          console.log('It tried i guess')
-        })
-      console.log('Ciau')
     },
     onSearchInput (ev) {
       this.searchFilter = ev.target.value
