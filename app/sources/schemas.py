@@ -145,3 +145,6 @@ class AbilitySet(BaseModel):
     e_key: int
     r_key: int
     passive_id: int
+
+    class Config:
+        orm_mode = True

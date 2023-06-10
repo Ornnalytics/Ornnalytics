@@ -36,8 +36,11 @@
         <img src="/static/useful_icons/arrow.png" style="transform: rotate(180deg)">
       </button>
     </div>
+    <div>
+
+    </div>
     <div style="display: flex; justify-content: center;">
-      <span>
+      <span style="font-weight: bolder; font-size: 18px;">
         {{ runePos+1 }}/{{ runes.length }}
       </span>
     </div>

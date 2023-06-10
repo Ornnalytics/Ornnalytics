@@ -50,18 +50,23 @@
           </div>
         </div>
       </div>
-      <div class="buildRow-Container" v-if="abilities.length > 0">
-        <span>
-          {{ abilities.ability_order[0] }}
-        </span>
-        <img src="/static/useful_icons/arrow.png">
-        <span>
-          {{ abilities.ability_order[0] }}
-        </span>
-        <img src="/static/useful_icons/arrow.png">
-        <span>
-          {{ abilities.ability_order[0] }}
-        </span>
+      <div class="ability-Container" v-if="abilities !== 0">
+        <div>
+          Orden de habilidades
+        </div>
+        <div class="abilityOrder-Container">
+          <span>
+            {{ abilities.ability_order[0] }}
+          </span>
+          <img src="/static/useful_icons/arrow.png">
+          <span>
+            {{ abilities.ability_order[1] }}
+          </span>
+          <img src="/static/useful_icons/arrow.png">
+          <span>
+            {{ abilities.ability_order[2] }}
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -74,7 +79,7 @@ export default {
   props: ['champ_id'],
   data() {
     return {
-      abilities: [],
+      abilities: 0,
       builds: [],
       build: {
         startingItems: [],
@@ -86,7 +91,8 @@ export default {
     }
   },
   created() {
-    this.getBuild(this.champ_id)
+    this.getBuild()
+    this.getAbilities()
   },
   watch: {
     champ_id(newvalue, oldvalue) {
@@ -116,6 +122,7 @@ export default {
     },
     getAbilities () {
       const path = 'http://localhost:8000/ability_set/' + this.champ_id
+      console.log(path)
       axios.get(path)
         .then((res) => {
           this.abilities = res.data
@@ -210,6 +217,38 @@ export default {
   flex-direction: row;
   align-content: center;
   justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.ability-Container {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+  font-weight: bolder;
+  font-size: 18px;
+}
+
+.abilityOrder-Container {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.abilityOrder-Container > * {
+  margin: 5px;
+}
+
+.abilityOrder-Container > img {
+  width: 10px;
+  height: 10px;
+  transform: rotate(180deg);
 }
 
 </style>

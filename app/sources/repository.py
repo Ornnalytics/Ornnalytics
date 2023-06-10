@@ -47,7 +47,8 @@ def get_abilities_by_champId(db: Session, id):
     statement = select(models.AbilitySet).where(models.AbilitySet.champ_id == id)
 
     data = db.execute(statement).first()
-    return data[0].ability_order
+    print(data[0])
+    return data[0]
 
 
 def get_runes_by_champId(db: Session, id):
