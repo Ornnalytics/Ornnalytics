@@ -110,13 +110,19 @@ def get_winrateWith(db: Session, champ_a_id, champ_b_id, _line_a='GLOBAL', _line
 def get_sugestions(db: Session, role, ally_team, enemy_team):
     lineDict = {'TOP': 0, 'JGL': 1, 'MID': 2, 'ADC': 3, 'SUP': 4}
 
-
     # Para mantener una estructura de la info, no se que datos estan en base de datos la verdad (creoq ue esta actualizado) los que faltan se calculan
     class Champion:
-        def __init__(self, id, name, type, primary_role, secundary_role, timeline, difficulty, engage, disengage, AP, AD, TrueDamage):
+        def __init__(self, id, name, type, primary_role, secundary_role, timeline, difficulty, engage, disengage, AP,
+                     AD, TrueDamage):
             self.id = id
             self.name = name
-            self.type = type
+            find = type.find('_')
+            if find != -1:
+                self.type = [type[:find], type[find + 1:]]
+            else:
+                self.type = [type]
+
+            self.type = [type[:type.find('_')]]
             self.primary_role = primary_role
             self.secundary_role = secundary_role
             self.timeline = timeline
@@ -132,12 +138,12 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
             self.wr_lane = 0
             self.damage_contribution = 0
 
-
     '''
     Calcula la media de winrates against entre el 'champ_id' y cada uno de los champs enemigos de 'enemy_team'.
-    
+
     Return: media de los winrates against entre el 'champ_id' y cada uno de los champs en 'enemy_team' 
     '''
+
     # Winrate del champ contra el equipo enemigo
     def team_wr_against_team(champ_id, enemy_team):
         print("\n\nCalculando winrate against Team", champ_id, enemy_team)
@@ -151,28 +157,32 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
             print(enemy)
             if enemy > 0:
                 data = get_winrateAgainst(db=db, champ_a_id=champ_id,
-                                              champ_b_id=enemy, line=list(lineDict.keys())[enemy_i])
-                if data != None:                                                                                                    # TODO, REVISAR PQ COJONES NO SE SUBEN TODOS LOS ELO=GLOBAL (EJEMPLO 10-31 EN AGAINST(
+                                          champ_b_id=enemy, line=list(lineDict.keys())[enemy_i])
+
+                if data != None:
                     wr_enemy = data.winrate
                     total_wr += wr_enemy
                     enemy_count += 1
                     print("WR:", wr_enemy, "total_wr:", total_wr, "enemy_count:", enemy_count)
+                else:
+                    print("Winrate_against_team = None")
+
             enemy_i += 1
 
         result = 0
         if enemy_count > 0:
             result = total_wr / enemy_count
-            print("Return:", total_wr/enemy_count, "\n\n")
+            print("Return:", total_wr / enemy_count, "\n\n")
 
         return result
-
 
     '''
     Calcula el winrate de el aliado 'champ_id' contra el champ enemigo de la misma linea ('role') del 'enemy_team'
     en caso que el enemigo este pickeado (!= 0)
-    
+
     Return: winrate against del 'champ_id' contra el mismo champ enemigo de la linea.
     '''
+
     def team_wr_against(champ_id, enemy_team, role):
         print("\n\nCalculando winrate against champ", champ_id, enemy_team, role)
 
@@ -181,22 +191,24 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
         if (enemy_team[lineDict[role]] != 0):
             print("Champ exists:", enemy_team[lineDict[role]])
             data = get_winrateAgainst(db=db, champ_a_id=champ_id,
-                                          champ_b_id=enemy_team[lineDict[role]],
-                                          line=role)
+                                      champ_b_id=enemy_team[lineDict[role]],
+                                      line=role)
             if data == None:
+                print("Winrate_against_lane = None")
                 return 0
+            wr_enemy = data.winrate
 
         print("Return wr_enemy:", wr_enemy)
         return wr_enemy
 
-
     '''
     Calcula el winrate de el aliado 'champ_id' a partir de los champs en 'ally_team', usa el parametro 'role' para,
     junto a el muiltiplicador 'ally_multiplier', valorar de manera distinta si estas en la botlane.
-    
+
     Return: media de winrates de todas las combinaciones de winrate_with(champ_id, ally_champ_id),
     siendo ally_champ_id cada uno de los champs en ally_team distintos a 0 (A.K.A.: pickeados)
     '''
+
     def team_wr_with(champ_id, ally_team, role, ally_multiplier=1):
         print("\n\nCalculando winrate with", champ_id, ally_team, role, ally_multiplier)
         total_wr = 0
@@ -208,7 +220,10 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
             position = ally_team.index(ally)
             print("Position:")
             if ally > 0:
-                data = get_winrateWith(db=db, champ_a_id=champ_id, champ_b_id=ally, _line_a=role, _line_b=list(lineDict.keys())[position])
+                data = get_winrateWith(db=db, champ_a_id=champ_id, champ_b_id=ally, _line_a=role,
+                                       _line_b=list(lineDict.keys())[position])
+                if data == None:
+                    data = get_winrateWith(db=db, champ_a_id=champ_id, champ_b_id=ally)
                 if data != None:
                     wr_ally = data.winrate
                     print(wr_ally)
@@ -218,6 +233,8 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
                     else:
                         total_wr += wr_ally
                         ally_count += 1
+                else:
+                    print("Winrate_with = None")
 
         result = 0
         if ally_count > 0:
@@ -225,13 +242,11 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
 
         return result
 
-
     # Winrate del champ en la linea
     def team_wr_lane(champ_id, role):
         print("\n\n\nCalculando winrate lane")
         wr_lane = get_winrateByLane(db=db, champ_id=champ_id, linea=role)[0]
         return wr_lane
-
 
     # Daño que aporta el champ al equipo
     def get_damage_contribution(champ, ally_team):
@@ -256,18 +271,124 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
         damage_contribution['AP'] = (champ.AP + damage_contribution['AP']) / count
         damage_contribution['TD'] = (champ.TrueDamage + damage_contribution['TD']) / count
 
-        return min(damage_contribution['AD'] / damage_contribution['AP'], damage_contribution['AP'] / damage_contribution['AD']) + 1
+        return min(damage_contribution['AD'] / damage_contribution['AP'],
+                   damage_contribution['AP'] / damage_contribution['AD']) + 1
 
+    ###################################################################################################################################################
+
+    # Daño que aporta el champ al equipo
+    def get_damage_contribution2(champ, ally_team):
+        print("\n\n\nGetting damage contribution")
+
+        damage_contribution = {'AD': 0, 'AP': 0, 'TD': 0}
+        count = 1
+
+        print("Para cada ally en", ally_team)
+        for ally in ally_team:
+            print("Ally:", ally)
+            if ally > 0:
+                ally_champ = get_champ_by_champId(db=db, champ_id=ally)
+                if 'support' == ally_champ.type[0] or (
+                        'tank' == ally_champ.type[0] and 'support' == ally_champ.type[1]):
+                    count += 0.5
+                else:
+                    count += 1
+                # ponemos los damages
+                damage_contribution['AD'] += ally_champ.AD
+                damage_contribution['AP'] += ally_champ.AP
+                damage_contribution['TD'] += ally_champ.TrueDamage
+                print("DamageContribution:", damage_contribution)
+
+        damage_contribution['AD'] = (champ.AD + damage_contribution['AD']) / count
+        damage_contribution['AP'] = (champ.AP + damage_contribution['AP']) / count
+        damage_contribution['TD'] = (champ.TrueDamage + damage_contribution['TD']) / count
+
+        return min(damage_contribution['AD'] / damage_contribution['AP'],
+                   damage_contribution['AP'] / damage_contribution['AD']) + 1
+
+        # Daño que aporta el champ al equipo
+
+    def get_has_engage(champ, ally_team, engageMultiplier):
+        print("\n\n\nGetting engage contribution")
+
+        compo = {'engage': 0, 'disengage': 0}
+        count = 1
+
+        print("Para cada ally en", ally_team)
+        for ally in ally_team:
+            print("Ally:", ally)
+            if ally > 0:
+                ally_champ = get_champ_by_champId(db=db, champ_id=ally)
+                count += 1
+                # ponemos los damages
+                compo['engage'] += ally_champ.engage
+                compo['disengage'] += ally_champ.disengage
+
+        result = 0
+        if compo['engage'] > 0:
+            result += engageMultiplier
+        if compo['disengage'] > 0:
+            result += engageMultiplier
+        return result
+
+    # 0X1X2X
+    def get_timestamp(champ_id, timeStampMultiplier):
+        print("\n\n\nGetting timestamp contribution")
+        ally_champ = get_champ_by_champId(db=db, champ_id=champ_id)
+
+        result = timeStampMultiplier[0]
+        result += int(champ.timeline[3]) * timeStampMultiplier[1]
+        result += int(champ.timeline[5]) * timeStampMultiplier[2]
+        print("\nTimestamp contribution", result)
+        return result
+
+    def get_dificulty(champ_id, difficultyMultiplier):
+        print("\n\n\nGetting dificulty contribution")
+        ally_champ = get_champ_by_champId(db=db, champ_id=champ_id)
+        if champ.difficulty == 0:
+            return difficultyMultiplier[0]
+        if champ.difficulty == 1:
+            return difficultyMultiplier[1]
+
+        return difficultyMultiplier[2]
+
+    def get_needs_tank(champ, ally_team, role, tankMultiplier):
+        print("\n\n\nGetting if needs a tank contribution")
+
+        if role == "ADC":
+            return 0
+
+        tanks = 0
+        print("Para cada ally en", ally_team)
+        for ally in ally_team:
+            print("Ally:", ally)
+            if ally > 0:
+                ally_champ = get_champ_by_champId(db=db, champ_id=ally)
+                # ponemos los damages
+                if 'tank' in ally_champ.type:
+                    tanks += 1
+                if 'fighter' in ally_champ.type:
+                    tanks += 0.5
+
+        if tanks == 0:
+            return tankMultiplier[0]
+        if tanks == 0.5:
+            return tankMultiplier[1]
+        return tankMultiplier[2]
+
+    ###################################################################################################################################################
 
     # Obtenemos los champs que tengan el role en primaria o secundaria
     possible_champs = []
     temp = db.query(models.Champ).filter((models.Champ.main_role == role) | (models.Champ.secondary_role == role)).all()
     for champ in temp:
+        if champ.champ_id in ally_team or champ.champ_id in enemy_team:
+            continue
         possible_champs.append(
             Champion(champ.champ_id, champ.name, champ.type, champ.main_role, champ.secondary_role,
                      champ.timeline_results, champ.difficulty_level, champ.engage, champ.disengage,
                      champ.AP, champ.AD, champ.TrueDamage))
-
+    print(len(possible_champs), possible_champs)
 
     # Calculamos datos para la recomendación
     for champ in possible_champs:
@@ -275,26 +396,33 @@ def get_sugestions(db: Session, role, ally_team, enemy_team):
         champ.wr_with = team_wr_with(champ_id=champ.id, ally_team=ally_team, role=role)
         champ.wr_against_team = team_wr_against_team(champ_id=champ.id, enemy_team=enemy_team)
         champ.wr_against_lane = team_wr_against(champ_id=champ.id, enemy_team=enemy_team, role=role)
-        champ.damage_contribution = get_damage_contribution(champ, ally_team)
-
+        champ.damage_contribution = get_damage_contribution2(champ, ally_team)
 
     # Multiplicadores de oscar que algunos sirven no se la verdad yo los he puesto
-    TeamNeedsATank = 0.1  # Miramos si hay un tanque o fighter en el equipo aliado
-    HasEquilibrateDmg = 0.1  # Proporcional al equilibrio, optimo 50/50
-    TimeStamp = 0  # 0 early, 0.05 mid, 0.1 late #Ya que los enemigos no cierran partidas(Maybe multiplicar por el numero si no cmabiamos el sistema)
-    Facilidad = 0.1  # campeon facil 0.1, campeon dificil 0
-    TeamHasEngageANDDisengage = 0.1  # 0.1 si el equipo tiene las dos, 0.05 si solo tiene una, 0.0 si ninguna
+    HAS_TANK = [0.1, 0.5, 0]  # Miramos si hay un tanque o fighter en el equipo aliado [hay 0 tanks, hay algun fighter, hay tank]
+    EQUILIBRATED_DMG = 0.1  # Proporcional al equilibrio, optimo 50/50
+    TIMESTAMP = [0, 0.015, 0.035]  # 0 early, 0.05 mid, 0.1 late #Ya que los enemigos no cierran partidas(Maybe multiplicar por el numero si no cmabiamos el sistema)
+    DIFFICULTY = [0.1, 0.05, 0]  # campeon facil 0.1, campeon dificil 0
+    ENGAGE_DISENGAGE = 0.05  # 0.1 si el equipo tiene las dos, 0.05 si solo tiene una, 0.0 si ninguna
 
     # Campeones sugeridos (id, valoracion)
     champs_suggested = []
     for champ in possible_champs:
+        multiplier = get_has_engage(champ=champ.id, ally_team=ally_team, engageMultiplier=ENGAGE_DISENGAGE) + \
+                     get_timestamp(champ_id=champ.id, timeStampMultiplier=TIMESTAMP) + \
+                     get_dificulty(champ_id=champ.id, difficultyMultiplier=DIFFICULTY) + \
+                     get_needs_tank(champ=champ.id, ally_team=ally_team, role=role, tankMultiplier=HAS_TANK) + \
+                     (champ.damage_contribution * EQUILIBRATED_DMG)
+        print("Multiplier:", multiplier)
         print(champ.wr_against_lane, champ.wr_against_team, champ.wr_with, champ.wr_lane, champ.damage_contribution)
-        if champ.wr_against_lane == 0 or champ.wr_against_lane == None:
-            champ_value = (champ.wr_lane + champ.wr_against_team + champ.wr_with) / 3 + champ.damage_contribution * HasEquilibrateDmg
-        else:
-            champ_value = (champ.wr_against_lane + champ.wr_against_team + champ.wr_with) / 3 + champ.damage_contribution * HasEquilibrateDmg
-        champs_suggested.append({'champ_id': champ.id, 'winrate': champ.wr_lane, 'ponderation': champ_value})
 
+        if champ.wr_against_lane == 0 or champ.wr_against_lane == None:
+            champ_value = ((champ.wr_lane + champ.wr_against_team + champ.wr_with) / 3) * (multiplier + 1)
+
+        else:
+            champ_value = ((champ.wr_against_lane + champ.wr_against_team + champ.wr_with) / 3) * (multiplier + 1)
+
+        champs_suggested.append({'champ_id': champ.id, 'winrate': champ.wr_lane, 'ponderation': champ_value})
 
     champs_suggested.sort(key=lambda x: x['ponderation'])
     return champs_suggested[::-1]
