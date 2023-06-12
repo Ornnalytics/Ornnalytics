@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="filter-icons-header">
+        <div id="filter-icons-header">
           <div class="filter-role-container">
             <button v-for="role in roleOptions" v-bind:key="role" class="filter-role-button"
                     :class="{ not_selected: (selectedRole !== 'ANY' && role !== selectedRole)}"
@@ -10,7 +10,7 @@
           </div>
           <input @input="onSearchInput" placeholder="Buscar..." clasS="filter-search">
         </div>
-        <div class="champList">
+        <div id="champList">
           <div class="champIcon" v-for="champ in champList" v-bind:key="champ.id" v-show="filter(champ)">
             <button @click="setChamp(champ.champ_id)">
               <img :src="'/static/icons/'+ champ.champ_id +'.jpg'">
@@ -19,6 +19,9 @@
               <span class="champName">{{ champ.name }}</span>
             </div>
           </div>
+        </div>
+        <div id="logo">
+          <img src="/static/ornnalitics_logo.png">
         </div>
     </div>
 </template>
@@ -85,7 +88,7 @@ export default {
 
 <style scoped>
 
-.filter-icons-header {
+#filter-icons-header {
   width: 100%;
 
   display: flex;
@@ -125,7 +128,7 @@ export default {
   margin: 5px;
 }
 
-.champList {
+#champList {
   max-height: 70vh;
   widtH: 40vw;
   overflow-y: auto;
@@ -137,6 +140,7 @@ export default {
   padding-left: 50px;
   align-items: start;
   justify-content: start;
+  background-color: transparent;
 }
 
 .champIcon {
@@ -159,13 +163,13 @@ img {
   user-select: none;
 }
 
-.custom-select {
-  position: relative;
-  width: 100%;
-  text-align: left;
-  outline: none;
-  height: 47px;
-  line-height: 47px;
+#logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 30px;
+  opacity: 0.7;
+  user-select: none;
 }
 
 button {

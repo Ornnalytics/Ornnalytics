@@ -31,6 +31,11 @@
             </div>
           </div>
         </div>
+        <div id="summSpell-Container">
+          <div class="summSpell" v-for="(summ, i) in this.runesDisplayed.summonerSpell" v-bind:key="'D' + i">
+            <img :src="'/static/summoner_icons/'+ summ +'.png'">
+          </div>
+        </div>
       </div>
       <button class="changeButton" @click="changeRunes('right')">
         <img src="/static/useful_icons/arrow.png" style="transform: rotate(180deg)">
@@ -98,6 +103,11 @@ export default {
         runes.last_perk_id_1,
         runes.last_perk_id_2,
         runes.last_perk_id_3
+      ]
+
+      this.runesDisplayed.summonerSpell = [
+        runes.summ_spell_id_1,
+        runes.summ_spell_id_2
       ]
 
       this.$forceUpdate()
@@ -214,6 +224,20 @@ export default {
 
   flex: 1 1 auto;
   margin: 20px;
+}
+
+#summSpell-Container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.summSpell>* {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 
 .changeButton {

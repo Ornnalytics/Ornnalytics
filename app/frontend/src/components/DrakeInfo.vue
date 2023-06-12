@@ -60,8 +60,7 @@ export default {
 
   height: 100%;
   width: 100%;
-  background-color: lightgrey;
-  border: 1px solid lightgoldenrodyellow;
+  background-color: #4545454d;
 }
 
 .dataContainer {

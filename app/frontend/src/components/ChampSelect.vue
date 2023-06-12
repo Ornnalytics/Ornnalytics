@@ -9,6 +9,7 @@
                 :class="{[lado]: true, picked: (rolePicked && rolePicked===position.role), setted: (champsPicked[position.pos] !== 0)}"
                 @click="pickRole(position.role, $event)">
           <img :src="'/static/icons/'+ champsPicked[position.pos] +'.jpg'" v-if="champsPicked[position.pos] !== 0">
+          <img :src="'/static/lane_icons/'+ position.role + '.png'" v-else class="laneImg">
         </button>
         <button v-if="lado === 'red'" style="transform: rotate(180deg)"  class="selectIcon" :class="{setted: (myRole===position.role)}" @click="pickMyRole(position.role)">
           <img src="/static/useful_icons/arrow.png" style="transform: rotate(180deg)">
@@ -152,7 +153,7 @@ export default {
 }
 
 .selectIcon {
-  opacity: 0.2;
+  opacity: 0.3;
   padding: 5px;
 }
 
@@ -212,6 +213,11 @@ button {
   background-color: #AAA;
   widtH: 33%;
   height: 20px;
+}
+
+.laneImg {
+  width: 60px !important;
+  height: 60px !important;
 }
 
 </style>

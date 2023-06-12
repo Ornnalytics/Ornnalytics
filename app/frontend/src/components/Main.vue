@@ -15,6 +15,7 @@
     </div>
 
     <dataZone :b_picks="b_champsPicked" :b_pos="b_myRole" :r_picks="r_champsPicked" :r_pos="r_myRole"></dataZone>
+    <div class="background"></div>
   </main>
 </template>
 
@@ -153,6 +154,7 @@ export default {
 html, body {
   margin: 0px;
 }
+
 main {
   padding: 10px;
   display: flex;
@@ -174,6 +176,20 @@ main {
 
 #redChampSelect {
   flex: 1;
+}
+
+.background {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background-image: url("../../static/background.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  backdrop-filter: contrast(0.5);
+  opacity: 0.5;
+  z-index: -1;
 }
 
 </style>

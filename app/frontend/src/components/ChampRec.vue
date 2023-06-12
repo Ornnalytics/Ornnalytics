@@ -122,8 +122,7 @@ export default {
   flex-direction: row;
   height: 100%;
   width: 100%;
-  background: lightgrey;
-  border: 1px solid lightgoldenrodyellow;
+  background: #4545454d;
 }
 
 #champRec-Container {
